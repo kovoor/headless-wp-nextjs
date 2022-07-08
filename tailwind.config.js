@@ -4,7 +4,17 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'Space-Grotesk': ['"Space Grotesk"', 'sans-serif']
+      },
+    },
   },
-  plugins: [],
+  variants: {
+    display: ['responsive', 'dropdown']
+  },
+  plugins: [
+    require('@tailwindcss/line-clamp'),
+    require('tailwindcss-dropdown')
+  ],
 }

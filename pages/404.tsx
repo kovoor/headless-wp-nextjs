@@ -1,0 +1,36 @@
+import { ChevronLeftIcon } from "@heroicons/react/solid";
+import Head from "next/head";
+import Link from "next/link";
+import React from "react";
+import { Footer } from "../components/Footer";
+import { Header } from "../components/Header";
+
+const Custom404 = () => {
+  return (
+    <div className="min-h-screen">
+      <Head>
+        <Header />
+      </Head>
+
+      <div className="flex flex-col min-h-screen px-4 py-4 space-x-8 bg-slate-50 align-middle items-center">
+        <h1 className="font-semibold font-Space-Grotesk mt-4 text-xl">
+          404 - Page Not Found
+        </h1>
+        <h2 className="font-bold font-Space-Grotesk mt-6 text-3xl">
+          Oops, you've gone off the trail
+        </h2>
+        <img
+          src="https://c.tenor.com/bK1qpWGyQKkAAAAM/kitty.gif"
+          className="mt-8"
+        />
+        <div className="flex w-96 self-center mt-4 space-x-1"></div>
+      </div>
+
+      <footer>
+        <Footer />
+      </footer>
+    </div>
+  );
+};
+
+export default Custom404;
