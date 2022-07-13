@@ -7,6 +7,7 @@ import { FolderIcon } from "@heroicons/react/outline";
 import { ArrowSmRightIcon } from "@heroicons/react/outline";
 import { RelatedPost } from "../../../components/RelatedPost";
 import Link from "next/link";
+import { GetServerSideProps } from "next";
 
 export const NewsPost = () => {
   return (
@@ -70,7 +71,8 @@ export const NewsPost = () => {
                 <div className="group flex flex-row space-x-1">
                   <CalendarIcon className="h-4 w-4 text-slate-500" />
                   <span className="font-Space-Grotesk text-slate-500 text-xs">
-                    May 26, 2022
+                  <Link href="/archive/28-5-2022">
+                  May 26, 2022</Link>
                   </span>
                 </div>
               </div>
@@ -141,8 +143,11 @@ export const NewsPost = () => {
                 id="email"
               />
               <button
-                className="bg-purple-500 hover:bg-purple-700 shadow text-white font-bold my-2 py-2 px-2 rounded focus:outline-none focus:shadow-outline"
+                className="bg-purple-500 hover:bg-purple-700 shadow text-white font-bold my-2 py-2 px-2 rounded focus:outline-none focus:shadow-outline disabled:transform-none disabled:transition-none disabled:bg-slate-400 disabled:cursor-not-allowed disabled:text-white"
                 type="button"
+                // TODO: Add this state management + form with external newsletter management api 
+                // onClick={() => handleResetPass}
+                // disabled={!resetPassEmail.length}
               >
                 {" "}
                 I'm ready
@@ -205,5 +210,12 @@ export const NewsPost = () => {
     </div>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = async (context: any) => {
+  const vaar = "hello world"
+  return {
+    props: {}
+  };
+}
 
 export default NewsPost;

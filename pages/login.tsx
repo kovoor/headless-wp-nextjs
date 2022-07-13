@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { FormEvent, useEffect, useState } from "react";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
-import { supabase } from "../utils/supabaseClient";
+import { supabase } from "../utils/supabase";
 import { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/router";
 import { Apple } from "../components/Form/Apple";
@@ -186,7 +186,7 @@ const Login = (props: any) => {
                       </label>
                     </div>
                     <button
-                      className="bg-blue-500 hover:bg-blue-800 shadow text-white font-bold my-2 py-2 px-2 rounded w-24 focus:ring-2 focus:outline-blue-300 cursor-pointer"
+                      className="bg-blue-500 hover:bg-blue-800 shadow text-white font-bold my-2 py-2 px-2 rounded w-24 focus:ring-2 focus:outline-blue-300 cursor-pointer disabled:transform-none disabled:transition-none disabled:bg-slate-400 disabled:cursor-not-allowed disabled:text-white"
                       onClick={() => handleSignIn}
                       type="submit"
                       disabled={!password.length || !email.length}
@@ -214,10 +214,10 @@ const Login = (props: any) => {
                     required
                   />
                   <button
-                    className="bg-blue-500 hover:bg-blue-800 shadow text-white font-bold my-2 py-2 px-2 rounded focus:ring-2 focus:outline-blue-300 cursor-pointer justify-center align-middle self-center w-full"
+                    className="bg-blue-500 hover:bg-blue-800 shadow text-white font-bold my-2 py-2 px-2 rounded focus:ring-2 focus:outline-blue-300 cursor-pointer justify-center align-middle self-center w-full disabled:transform-none disabled:transition-none disabled:bg-slate-400 disabled:cursor-not-allowed disabled:text-white"
                     type="submit"
                     onClick={() => handleResetPass}
-                    // disabled={!password.length || !email.length}
+                    disabled={!resetPassEmail.length}
                   >
                     {" "}
                     Send reset link

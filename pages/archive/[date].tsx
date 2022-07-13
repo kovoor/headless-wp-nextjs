@@ -7,12 +7,12 @@ import { Header } from '../../components/Header'
 import { Pagination } from '../../components/Pagination'
 import { Post } from '../../components/Post'
 
-const Tag = () => {
+const Archive = () => {
   return (
     <div className="min-h-screen overflow-hidden">
       <Head>
         {/* TODO:Change below title */}
-        <title>Category Title</title>
+        <title>All Posts from 26th May 2022</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -22,11 +22,11 @@ const Tag = () => {
       <div className="flex flex-col lg:w-9/12 h-6/12 overflow-hidden flex-wrap">
       {/* Screen Title */}
       <div className="w-fit bg-gray-700 px-2 pb-1 justify-center items-center rounded-lg">
-        <span className="text-xs text-white font-Space-Grotesk font-semibold">Tag</span>
+        <span className="text-xs text-white font-Space-Grotesk font-semibold">Archive</span>
       </div>
       <div className="flex">
         <h2 className="font-Space-Grotesk text-2xl xl:text-3xl font-bold mt-2">
-          Ethereum
+          26th May 2022 
         </h2>
       </div>
       {/* TODO: Change the below description */}
@@ -38,21 +38,6 @@ const Tag = () => {
 
       {/* Posts Vertically – 5 min-h-screen */}
       <div className="flex flex-col space-y-1 mt-4 overflow-hidden">
-        <Link href="/post/1/hello-world" prefetch={false}>
-          <a>
-            <Post />
-          </a>
-        </Link>
-        <Link href="/post/1/hello-world" prefetch={false}>
-          <a>
-            <Post />
-          </a>
-        </Link>
-        <Link href="/post/1/hello-world" prefetch={false}>
-          <a>
-            <Post />
-          </a>
-        </Link>
         <Link href="/post/1/hello-world" prefetch={false}>
           <a>
             <Post />
@@ -86,4 +71,4 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
   };
 }
 
-export default Tag;
+export default Archive;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
-import { supabase } from "../utils/supabaseClient";
+import { supabase } from "../utils/supabase";
 import router from "next/router";
 import Link from "next/link";
 import { User } from "@supabase/supabase-js";

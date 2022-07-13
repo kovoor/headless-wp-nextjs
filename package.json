@@ -3,19 +3,20 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next export"
   },
   "dependencies": {
     "@headlessui/react": "^1.6.5",
     "@heroicons/react": "^1.0.6",
     "@supabase/supabase-js": "^1.35.3",
     "@tailwindcss/line-clamp": "^0.4.0",
+    "classnames": "^2.3.1",
     "dotenv": "^16.0.1",
     "next": "latest",
     "react": "18.1.0",
-    "react-dom": "18.1.0",
-    "react-icons": "^4.4.0",
-    "tailwindcss-dropdown": "^1.0.0"
+    "react-dom": "18.1.0"
   },
   "devDependencies": {
     "@types/node": "17.0.35",

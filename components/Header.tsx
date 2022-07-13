@@ -1,7 +1,7 @@
 import React from "react";
 import { UserCircleIcon } from "@heroicons/react/solid";
 import Link from "next/link";
-import { supabase } from "../utils/supabaseClient";
+import { supabase } from "../utils/supabase";
 import Router, { useRouter } from "next/router";
 import Dropdown from "./Dropdown";
 

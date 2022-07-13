@@ -14,7 +14,6 @@ module.exports = {
     display: ['responsive', 'dropdown']
   },
   plugins: [
-    require('@tailwindcss/line-clamp'),
-    require('tailwindcss-dropdown')
+    require('@tailwindcss/line-clamp')
   ],
 }

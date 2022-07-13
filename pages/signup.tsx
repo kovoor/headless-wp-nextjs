@@ -12,7 +12,7 @@ import { Footer } from "../components/Footer";
 import { Apple } from "../components/Form/Apple";
 import { Google } from "../components/Form/Google";
 import { Header } from "../components/Header";
-import { supabase } from "../utils/supabaseClient";
+import { supabase } from "../utils/supabase";
 
 const SignUp = () => {
   const [newUser, setNewUser] = useState<User | null>(null);

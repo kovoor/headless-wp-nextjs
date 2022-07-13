@@ -9,7 +9,7 @@ import { ErrorAlert } from "../components/Alert/ErrorAlert";
 import { NoteAlert } from "../components/Alert/NoteAlert";
 import { SuccessAlert } from "../components/Alert/SuccessAlert";
 import { Header } from "../components/Header";
-import { supabase } from "../utils/supabaseClient";
+import { supabase } from "../utils/supabase";
 
 const Recovery = () => {
   const [state, setState] = useState<"default" | "resetting">("default");
@@ -140,7 +140,7 @@ const Recovery = () => {
               />
               <div className="flex justify-center flex-1 mt-2">
                 <button
-                  className="bg-blue-500 hover:bg-blue-800 shadow text-white font-bold my-2 py-2 px-2 rounded focus:ring-2 focus:outline-blue-300 align-middle self-center w-full"
+                  className="bg-blue-500 hover:bg-blue-800 shadow text-white font-bold my-2 py-2 px-2 rounded focus:ring-2 focus:outline-blue-300 align-middle self-center w-full disabled:transform-none disabled:transition-none disabled:bg-slate-400 disabled:cursor-not-allowed disabled:text-white"
                   onClick={() => handleRecovery}
                   type="submit"
                   disabled={!newPassword.length || !newPasswordRepeat.length}

@@ -1,11 +1,12 @@
 import { User } from "@supabase/supabase-js";
+import { GetServerSideProps } from "next";
 import Head from "next/head";
 import React, { FormEvent, useEffect, useState } from "react";
 import { ErrorAlert } from "../../components/Alert/ErrorAlert";
 import { NoteAlert } from "../../components/Alert/NoteAlert";
 import { SuccessAlert } from "../../components/Alert/SuccessAlert";
 import { Header } from "../../components/Header";
-import { supabase } from "../../utils/supabaseClient";
+import { supabase } from "../../utils/supabase";
 
 export const UserProfile = () => {
   const [username, setUsername] = useState('');
@@ -213,5 +214,12 @@ export const UserProfile = () => {
     </div>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = async (context: any) => {
+  const vaar = "hello world"
+  return {
+    props: {}
+  };
+}
 
 export default UserProfile;

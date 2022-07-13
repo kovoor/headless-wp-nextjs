@@ -1,3 +1,4 @@
+import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
@@ -81,5 +82,12 @@ const Category = () => {
     </div>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = async (context: any) => {
+  const vaar = "hello world"
+  return {
+    props: {}
+  };
+}
 
 export default Category;
