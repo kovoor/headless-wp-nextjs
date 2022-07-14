@@ -4,9 +4,12 @@ import { Feed } from "../components/Feed";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { Sidebar } from "../components/Sidebar";
+import { getAllPostsForHome } from '../lib/api'
 
-const Home: NextPage = () => {
-  
+const Home: NextPage = ({ allPosts: { edges }, preview }: any) => {
+  console.log(edges)
+
+
   return (
     <div className="">
       <Head>
@@ -26,6 +29,14 @@ const Home: NextPage = () => {
     </div>
   );
 };
+
+export async function getStaticProps({ preview = false }) {
+  const allPosts = await getAllPostsForHome(preview);
+  return {
+    props: { allPosts, preview },
+    revalidate: 10,
+  }
+}
 
 export default Home;
 
