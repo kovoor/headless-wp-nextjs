@@ -76,7 +76,6 @@ export const UserProfile = () => {
       // console.log(user, error)
   };
 }
-
   return (
     <div className="">
       <Head>
@@ -106,15 +105,17 @@ export const UserProfile = () => {
               <SuccessAlert message={message.content} />
             </div>
           )}
-        <img
+
+        {/* TODO: Add profile image capabilities (v2) */}
+        {/* <img
           className="w-44 h-44 object-cover rounded-full bg-slate-400"
           src="/my-pic.png"
-        />
+        /> */}
 
         {/* Username */}
         <div className="flex space-x-2">
           <h2 className="text-2xl font-Space-Grotesk font-semibold mt-6">
-            jakekovoor
+            @{userExists?.user_metadata.username}
           </h2>
           {/* <button>
             <PencilAltIcon className="w-6 h-8 mt-6" />

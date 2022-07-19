@@ -34,6 +34,8 @@ export default async function preview(req: NextApiRequest, res: NextApiResponse)
   
     // Redirect to the path from the fetched post
     // We don't redirect to `req.query.slug` as that might lead to open redirect vulnerabilities
-    res.writeHead(307, { Location: `/posts/${post.slug || post.databaseId}` })
+    res.writeHead(307, { Location: `/post/${post.databaseId}/${post.slug || post.databaseId}` })
     res.end()
   }
+
+  // 2MX1GwaVE2Dy1UFpNdzjoafY5Ey2UMGJsns20HY2sfEkMrohXcerWJPf4Y2iJMkxcqJuCUwZMRjBup06UDaZkEL8mdjqtx91phvW

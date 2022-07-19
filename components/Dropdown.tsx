@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon, UserCircleIcon } from "@heroicons/react/solid";
 import { supabase } from "../utils/supabase";
 import router from "next/router";
 import Link from "next/link";
@@ -24,11 +24,14 @@ const classNames = (...classes: any) => {
 const LoggedInUserDropdown = () => {
     return(
         <Menu.Button className="justify-center w-full rounded-full shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
-            <img
+            {/* TODO: Add profile image capabilities (v2) */}
+            {/* <img
               className={`object-cover w-8 h-8 sm:w-10 sm:h-10 rounded-full inline
               }`}
               src="/my-pic.png"
-              alt="Profile picture" />
+              alt="Profile picture" /> */}
+
+            <UserCircleIcon className="w-10 h-10 text-slate-500"/>
             {/* <ChevronDownIcon className={`-mr-1 ml-2 h-5 w-5 ${user ? 'hidden' : 'inline'}`} aria-hidden="true" /> */}
           </Menu.Button>
     )
@@ -94,6 +97,18 @@ const Dropdown = () => {
                 )}
               </Menu.Item>
               </Link>
+              <Menu.Item>
+                {({ active }) => (
+                  <div
+                    className={classNames(
+                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                      "block px-4 py-2 text-sm"
+                    )}
+                  >
+                    Toggle dark mode
+                  </div>
+                )}
+              </Menu.Item>
               {/* <Menu.Item>
               {({ active }) => (
                 <a

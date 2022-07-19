@@ -25,16 +25,26 @@ export const Header = () => {
             Home
           </Link>
         </span>
-        <span className="hover:underline hover:text-black cursor-pointer">
+        {/* <span className="hover:underline hover:text-black cursor-pointer">
           <Link href="/" prefetch={false}>
             Updates
           </Link>
-        </span>
+        </span> */}
         <span className="hover:underline hover:text-black cursor-pointer">
-          <Link href="/" prefetch={false}>
-            Blog
+          <Link href="/category/news" prefetch={false}>
+            News
           </Link>
         </span>
+        <span className="hover:underline hover:text-black cursor-pointer">
+          <Link href="/category/guides" prefetch={false}>
+            Guides
+          </Link>
+        </span>
+        {/* <span className="hover:underline hover:text-black cursor-pointer">
+          <Link href="/category/guides" prefetch={false}>
+            Blog
+          </Link>
+        </span> */}
 
         {/* Add hover menu with submenu  https://codesandbox.io/s/tailwind-dropdown-with-group-hover-gm9k9 */}
 

@@ -170,6 +170,7 @@ const SignUp = () => {
 
             <form onSubmit={handleSignUp}>
               <p className="text-black ">Username</p>
+              {/* TODO: Add username pattern validation */}
               <input
                 type="username"
                 className="border rounded text-gray-600 my-2 px-4 py-1 w-full"
@@ -181,6 +182,7 @@ const SignUp = () => {
                 required
               />
               <p className="text-black mt-3">Email address</p>
+              {/* TODO: Add email pattern validation */}
               <input
                 type="email address"
                 className="border rounded text-gray-600 my-2 px-4 py-1 w-full"
@@ -192,6 +194,7 @@ const SignUp = () => {
                 required
               />
               <p className="text-black mt-3">Password</p>
+              {/* TODO: Add password pattern validation */}
               <input
                 type="password"
                 className="border rounded text-gray-600 my-2 px-4 py-1 w-full"

@@ -7,8 +7,8 @@ import { Sidebar } from "../components/Sidebar";
 import { getAllPostsForHome } from '../lib/api'
 
 const Home: NextPage = ({ allPosts: { edges }, preview }: any) => {
-  console.log(edges)
 
+  const posts = edges
 
   return (
     <div className="">
@@ -20,7 +20,7 @@ const Home: NextPage = ({ allPosts: { edges }, preview }: any) => {
       <Header />
 
       <main className="flex min-h-screen px-4 py-4 space-x-8 bg-slate-50">
-        <Feed />
+        <Feed posts={posts} />
         <Sidebar />
       </main>
 

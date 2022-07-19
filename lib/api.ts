@@ -57,6 +57,7 @@ export async function getAllPostsWithSlug() {
         posts(first: 10000) {
           edges {
             node {
+              databaseId
               slug
             }
           }
@@ -77,6 +78,7 @@ export async function getAllPostsForHome(preview: boolean) {
               excerpt
               slug
               date
+              databaseId
               featuredImage {
                 node {
                   sourceUrl
@@ -90,6 +92,21 @@ export async function getAllPostsForHome(preview: boolean) {
                   avatar {
                     url
                   }
+                }
+              }
+              categories {
+                nodes {
+                  description
+                  name
+                  slug
+                  uri
+                }
+              }
+              tags {
+                nodes {
+                  name
+                  slug
+                  uri
                 }
               }
             }
@@ -136,9 +153,12 @@ export async function getPostAndMorePosts(
         excerpt
         slug
         date
+        databaseId
         featuredImage {
           node {
             sourceUrl
+            altText
+            caption
           }
         }
         author {
@@ -150,6 +170,8 @@ export async function getPostAndMorePosts(
           edges {
             node {
               name
+              slug
+              uri
             }
           }
         }
@@ -157,6 +179,8 @@ export async function getPostAndMorePosts(
           edges {
             node {
               name
+              slug
+              uri
             }
           }
         }

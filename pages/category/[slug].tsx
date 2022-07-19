@@ -6,6 +6,7 @@ import { Footer } from "../../components/Footer";
 import { Header } from "../../components/Header";
 import { Pagination } from "../../components/Pagination";
 import { Post } from "../../components/Post";
+import { getAllPostsForHome } from "../../lib/api";
 
 const Category = () => {
   return (
@@ -83,11 +84,11 @@ const Category = () => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context: any) => {
-  const vaar = "hello world"
+export async function getStaticProps({ preview = false }) {
+  const allPosts = await getAllPostsForHome(preview);
   return {
-    props: {}
-  };
+    props: { allPosts, preview },
+    revalidate: 10,
+  }
 }
-
 export default Category;
