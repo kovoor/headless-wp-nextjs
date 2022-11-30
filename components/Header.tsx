@@ -1,12 +1,8 @@
 import React from "react";
-import { UserCircleIcon } from "@heroicons/react/solid";
 import Link from "next/link";
-import { supabase } from "../utils/supabase";
-import Router, { useRouter } from "next/router";
 import Dropdown from "./Dropdown";
 
-export const Header = () => {
-  const user = supabase.auth.user();
+export const Header = ({user}: any) => {
   return (
     <div className="flex items-center sticky top-0 shadow-md px-4 sm:px-4 md:px-4 lg:px-4 py-2 z-10 bg-white">
       {/* Logo */}
@@ -25,11 +21,6 @@ export const Header = () => {
             Home
           </Link>
         </span>
-        {/* <span className="hover:underline hover:text-black cursor-pointer">
-          <Link href="/" prefetch={false}>
-            Updates
-          </Link>
-        </span> */}
         <span className="hover:underline hover:text-black cursor-pointer">
           <Link href="/category/news" prefetch={false}>
             News
@@ -53,8 +44,7 @@ export const Header = () => {
         </span>
       </div>
 
-      {/* TODO: Add working dropdown */}
-      <Dropdown />
+      <Dropdown user={user} />
     </div>
   );
 };

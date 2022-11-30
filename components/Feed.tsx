@@ -2,10 +2,9 @@ import Link from "next/link";
 import React from "react";
 import { Pagination } from "./Pagination";
 import { Post } from "./Post";
-import { GetServerSideProps } from "next";
 
-export const Feed = ({ posts }: any) => {
-  posts.map(({ node }: any) => (console.log(node)))
+export const Feed = ({ posts, pagination }: any) => {
+  
   return (
     <div className="flex flex-col lg:w-9/12 h-6/12 overflow-hidden flex-wrap">
       {/* Screen Title */}
@@ -17,31 +16,44 @@ export const Feed = ({ posts }: any) => {
 
       {/* Posts Vertically – 5 min-h-screen */}
       <div className="flex flex-col space-y-1 mt-4 ">
-        {posts.map(({ node }: any) => (
-          <div key={node.slug}>
-          <Link href={`/post/${node.databaseId}/${node.slug}`} prefetch={false}>
-            <a>
-              <Post
-                id={node.databaseId}
-                title={node.title}
-                coverImage={node.featuredImage}
-                date={node.date}
-                author={node.author}
-                slug={node.slug}
-                excerpt={node.excerpt}
-                tags={node.tags}
-                categories={node.categories}
-              />
-            </a>
-          </Link>
+        {posts.map((post: any) => (
+          <div key={post.slug}>
+            {/* <Link
+              href={`/post/${post.databaseId}/${post.slug}`}
+              prefetch={false}
+              passHref
+            >
+              <a> */}
+                <Post
+                  id={post.databaseId}
+                  title={post.title}
+                  coverImage={post.featuredImage}
+                  date={post.date}
+                  author={post.author}
+                  slug={post.slug}
+                  excerpt={post.excerpt}
+                  tags={post.tags}
+                  categories={post.categories}
+                />
+              {/* </a>
+            </Link> */}
           </div>
         ))}
       </div>
 
       {/* Pagination Buttons */}
-      <div>
-        <Pagination />
-      </div>
+      {pagination ? (
+        <div>
+          <Pagination
+            addCanonical={false}
+            currentPage={pagination?.currentPage}
+            pagesCount={pagination?.pagesCount}
+            basePath={pagination?.basePath}
+          />
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

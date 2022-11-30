@@ -1,4 +1,3 @@
-import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
@@ -6,14 +5,14 @@ import { Footer } from "../../components/Footer";
 import { Header } from "../../components/Header";
 import { Pagination } from "../../components/Pagination";
 import { Post } from "../../components/Post";
-import { getAllPostsForHome } from "../../lib/api";
+import { getAllCategoriesWithSlug } from "../../lib/api";
+import { getPostsForCategoryPage } from "../../lib/posts";
 
-const Category = () => {
+const Category = ({posts, pagination}: any) => {
   return (
     <div className="min-h-screen overflow-hidden">
       <Head>
-        {/* TODO:Change below title */}
-        <title>Category Title</title>
+        <title>{posts?.name}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -29,50 +28,41 @@ const Category = () => {
           </div>
           <div className="flex">
             <h2 className="font-Space-Grotesk text-2xl xl:text-3xl font-bold mt-2">
-              Guides
+              {posts?.name}
             </h2>
           </div>
-          {/* TODO: Change the below description */}
           <div>
             <p className="text-sm mt-2 ">
-              ERC-721 is a token standard for non-fungible tokens on Ethereum. A
-              pillar of the ecosystem, it supports billions of dollars worth of
-              NFTs.
+              {posts?.description}
             </p>
           </div>
 
-          {/* Posts Vertically – 5 min-h-screen */}
+          {/* 5 Posts Vertically */}
           <div className="flex flex-col space-y-1 mt-4 overflow-hidden">
-            <Link href="/post/1/hello-world" prefetch={false}>
-              <a>
-                <Post />
-              </a>
-            </Link>
-            <Link href="/post/1/hello-world" prefetch={false}>
-              <a>
-                <Post />
-              </a>
-            </Link>
-            <Link href="/post/1/hello-world" prefetch={false}>
-              <a>
-                <Post />
-              </a>
-            </Link>
-            <Link href="/post/1/hello-world" prefetch={false}>
-              <a>
-                <Post />
-              </a>
-            </Link>
-            <Link href="/post/1/hello-world" prefetch={false}>
-              <a>
-                <Post />
-              </a>
-            </Link>
+
+          {posts ? posts?.map((post: any) => (
+          <div key={post.slug}>
+              <Post
+                id={post.databaseId}
+                title= {post.title}
+                coverImage={post.featuredImage}
+                date={post.date}
+                author={post.author}
+                slug={post.slug}
+                excerpt={post.excerpt}
+                tags={post.tags}
+                categories={post.categories}
+              />
+          </div>
+        )) : <></>}
           </div>
 
           {/* Pagination Buttons */}
           <div>
-            <Pagination />
+            <Pagination             addCanonical={false}
+            currentPage={pagination?.currentPage}
+            pagesCount={pagination?.pagesCount}
+            basePath={pagination?.basePath}/>
           </div>
         </div>
       </main>
@@ -84,11 +74,29 @@ const Category = () => {
   );
 };
 
-export async function getStaticProps({ preview = false }) {
-  const allPosts = await getAllPostsForHome(preview);
+export async function getStaticPaths() {
+  const allPosts = await getAllCategoriesWithSlug();
+  console.log(allPosts);
+
   return {
-    props: { allPosts, preview },
-    revalidate: 10,
-  }
+    paths:
+      allPosts.nodes.map(
+        (post: any) => `/category/${post.slug}`
+      ) || [],
+    fallback: true,
+  };
 }
+
+export async function getStaticProps({ preview = false, params }: any) {
+  const id = params.slug;
+  const {posts, pagination} = await getPostsForCategoryPage(preview, id);
+
+  console.log('New', posts)
+  return {
+    props: { posts, preview, pagination: {
+      ...pagination,
+      basePath: "/",
+    } }, revalidate: 10 }
+}
+
 export default Category;

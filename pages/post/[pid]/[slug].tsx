@@ -14,9 +14,10 @@ import Date from "../../../components/Date";
 import PostBody from "../../../components/Post/PostBody";
 import { supabase } from "../../../utils/supabase";
 import { User } from "@supabase/supabase-js";
+import { getUser } from "../../../lib/users";
 
-export const Post = ({ post, posts, preview }: any) => {
-  const router = useRouter();
+export const Post = ({ post, posts, preview, user }: any) => {
+  // const router = useRouter();
   const morePosts = posts?.edges;
   const [userExists, setUserExists] = useState<User | null>();
   const [email, setEmail] = useState("");
@@ -28,9 +29,12 @@ export const Post = ({ post, posts, preview }: any) => {
   // }
 
   useEffect(() => {
-    const user = supabase.auth.user();
-    setUserExists(user);
-  }, []);
+    getUser().then((user) => {
+      console.log(user)
+      setUserExists(user)
+      console.log(userExists)
+    })
+  }, [userExists]);
 
   const name = post?.author
     ? post.author.node.firstName && post.author.node.lastName
@@ -38,7 +42,7 @@ export const Post = ({ post, posts, preview }: any) => {
       : post.author.node.name
     : null;
 
-  posts.edges.map((post: any) => console.log(post.node))
+  const username = post?.author.node.name;
 
   return (
     <div>
@@ -64,13 +68,27 @@ export const Post = ({ post, posts, preview }: any) => {
                   <a>{post?.categories.edges[0].node.name}</a>
                 </Link>
               </span>
-              {post?.tags.length > 0 ? <ArrowSmRightIcon className="h-5 w-5 text-slate-500" /> : <></>}
+              {post?.tags.length > 0 ? (
+                <ArrowSmRightIcon className="h-5 w-5 text-slate-500" />
+              ) : (
+                <></>
+              )}
               <span className="hover:underline hover:text-black cursor-pointer">
                 <Link
-                  href={post?.tags.length > 0 ? `/tag/${post?.tags?.edges[0].node.slug}` : ''}
+                  href={
+                    post?.tags.length > 0
+                      ? `/tag/${post?.tags?.edges[0].node.slug}`
+                      : ""
+                  }
                   prefetch={false}
                 >
-                  <a>{post?.tags.length > 0 ? post.tags.edges[0].node.name : <></>}</a>
+                  <a>
+                    {post?.tags.length > 0 ? (
+                      post.tags.edges[0].node.name
+                    ) : (
+                      <></>
+                    )}
+                  </a>
                 </Link>
               </span>
             </div>
@@ -95,7 +113,11 @@ export const Post = ({ post, posts, preview }: any) => {
                   <span className="font-Space-Grotesk text-slate-500 text-xs">
                     Published by {/* TODO: Add author images here */}
                     <span className="hover:text-black cursor-pointer">
-                      <Link href="/profile/jakekovoor">{name}</Link>{" "}
+                      {name ? (
+                        <Link href={`/profile/${username}`}>{name}</Link>
+                      ) : (
+                        <></>
+                      )}
                     </span>
                     {/* <span className="">and </span>
                     <span className="hover:text-black cursor-pointer">
@@ -106,7 +128,7 @@ export const Post = ({ post, posts, preview }: any) => {
                     <CalendarIcon className="h-4 w-4 text-slate-500" />
                     <span className="font-Space-Grotesk text-slate-500 text-xs">
                       {/* <Link href="/archive/28-5-2022">May 26, 2022</Link> */}
-                      <Date dateString={post?.date} />
+                      {post?.date ? <Date dateString={post.date} /> : <></>}
                     </span>
                   </div>
                 </div>
@@ -178,39 +200,36 @@ export const Post = ({ post, posts, preview }: any) => {
             </h2>
           </div>
 
-          { posts ? <div className="flex flex-1 flex-col px-6 py-2 bg-slate-50 w-full mb-6 max-h-fit  ">
-            <div className="flex w-full md:w-3/4 md:self-center border-t">
-              <h2 className="font-Space-Grotesk text-2xl font-bold mt-4">
-                You may also like ...
-              </h2>
-            </div>
+          {posts ? (
+            <div className="flex flex-1 flex-col px-6 py-2 bg-slate-50 w-full mb-6 max-h-fit  ">
+              <div className="flex w-full md:w-3/4 md:self-center border-t">
+                <h2 className="font-Space-Grotesk text-2xl font-bold mt-4">
+                  You may also like ...
+                </h2>
+              </div>
 
-            {/* flex flex-1 space-x-2 mt-4 justify-center w-80 h-full flex-wrap overflow-auto  md:w-3/4 h-96 lg:h-full */}
-            <div className="flex flex-row mt-4 md:space-x-2 space-x-1 overflow-hidden w-full justify-center md:w-3/4 md:self-center flex-wrap max-w-full max-h-96">
-              {posts.edges.map(({ node }: any) => (
-                <div key={node.slug}>
-                  <Link
-                    href={`/post/${node.databaseId}/${node.slug}`}
-                    prefetch={false}
-                  >
-                    <a>
-                  {" "}
-                  <RelatedPost 
-                title={node.title}
-                coverImage={node.featuredImage}
-                date={node.date}
-                author={node.author}
-                slug={node.slug}
-                excerpt={node.excerpt}
-                tag={node.tags}
-                categories={node.categories}/>
-                </a>
-                  </Link>
-                </div>
-              ))}
+              {/* flex flex-1 space-x-2 mt-4 justify-center w-80 h-full flex-wrap overflow-auto  md:w-3/4 h-96 lg:h-full */}
+              <div className="flex flex-row mt-4 md:space-x-2 space-x-1 overflow-hidden w-full justify-center md:w-3/4 md:self-center flex-wrap max-w-full max-h-96">
+                {posts.edges.map(({ node }: any) => (
+                  <div key={node.slug}>{" "}
+                    <RelatedPost
+                      id={node.databaseId}
+                      title={node.title}
+                      coverImage={node.featuredImage}
+                      date={node.date}
+                      author={node.author}
+                      slug={node.slug}
+                      excerpt={node.excerpt}
+                      tag={node.tags}
+                      categories={node.categories}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div> : <></>}
-          
+          ) : (
+            <></>
+          )}
         </div>
 
         <footer>
@@ -227,6 +246,7 @@ export async function getStaticProps({
   previewData,
 }: any) {
   const data = await getPostAndMorePosts(params.slug, preview, previewData);
+
 
   return {
     props: {

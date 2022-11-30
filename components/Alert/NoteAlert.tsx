@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 export const NoteAlert = ({ message }: any) => {
-  const [close, setClose] = useState(false);
+  const [close, setClose] = useState<boolean>();
   console.log(message);
   console.log(close);
   return (

@@ -1,6 +1,6 @@
 import { ChevronLeftIcon, HomeIcon } from "@heroicons/react/outline";
 import { CheckCircleIcon } from "@heroicons/react/solid";
-import { Session } from "@supabase/supabase-js";
+import { Session, User } from "@supabase/supabase-js";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -9,10 +9,12 @@ import { ErrorAlert } from "../components/Alert/ErrorAlert";
 import { NoteAlert } from "../components/Alert/NoteAlert";
 import { SuccessAlert } from "../components/Alert/SuccessAlert";
 import { Header } from "../components/Header";
+import { getUser } from "../lib/users";
 import { supabase } from "../utils/supabase";
 
 const Recovery = () => {
   const [state, setState] = useState<"default" | "resetting">("default");
+  const [userExists, setUserExists] = useState<User | null>();
   const [sessionStatus, setSessionStatus] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -23,7 +25,18 @@ const Recovery = () => {
     content: "",
   });
 
-  console.log(sessionStatus)
+  // useEffect(() => {
+  //   // console.log(props?.router?.query.reset);
+  //   // if (props?.router?.query.reset === "success") {
+  //   //   setMessage({ type: "success", content: "Password reset successfully" });
+  //   // }
+
+  //   // getUser().then((user) => {
+  //   //   setUserExists(user)
+  //   //   console.log(user)
+  //   // })
+
+  // }, []);
 
   const handleRecovery: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
@@ -36,47 +49,59 @@ const Recovery = () => {
     }
     setState("resetting");
 
-    if(sessionStatus) {
-      const { data, error }: any = await supabase.auth.api
-      .updateUser(sessionStatus, { password : newPassword })
-      .then((data: any) => {
-        router.push(
-          {
-            pathname: "/login",
-            query: { reset: "success" },
+    if (sessionStatus) {
+      await supabase.auth
+        .updateUser({
+          data: {
+            password: newPassword,
           },
-          "/login"
-        );
-        console.log('password reset successfully', data)
-      })
-      .catch((error: any) => {
-        setMessage({
-          type: "error",
-          content:
-            "Token has expired. Request again for new password instructions.",
+        })
+        .then((data: any) => {
+          router.push(
+            {
+              pathname: "/",
+              query: { reset: "success" },
+            },
+            "/"
+          );
+          console.log("password reset successfully", data);
+        })
+        .catch((error: any) => {
+          setMessage({
+            type: "error",
+            content:
+              "Token has expired. Request again for new password instructions.",
+          });
+          console.log(error);
+          setState("default");
         });
-        console.log(error)
-        setState("default");
-      });
     } else {
       setMessage({
         type: "error",
-        content:
-          "Missing access token. Error",
+        content: "Missing access token",
       });
     }
-    
   };
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
-      if (event == 'PASSWORD_RECOVERY') {
-        console.log('PASSWORD_RECOVERY', session)
-        setSessionStatus(session?.access_token) 
+      if (event == "PASSWORD_RECOVERY") {
+        console.log("PASSWORD_RECOVERY", session);
+        setSessionStatus(session?.access_token);
       }
-    })
-  }, [])
-  
+    });
+
+    getUser().then((user) => {
+      setUserExists(user);
+      console.log(user);
+    });
+
+    if(!sessionStatus && userExists) {
+      router.push("/")
+    }
+
+
+  }, []);
 
   return (
     <div className="min-h-screen">

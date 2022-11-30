@@ -1,4 +1,3 @@
-// TODO: Change below to "WORDPRESS_API_URL"
 const API_URL = process.env.WORDPRESS_LOCAL_API_URL;
 
 export const fetchAPI = async (query: string = "", { variables }: any = {}) => {
@@ -67,6 +66,38 @@ export async function getAllPostsWithSlug() {
   return data?.posts;
 }
 
+export async function getAllCategoriesWithSlug() {
+  const data = await fetchAPI(`
+      {
+        categories(first: 100, where: {exclude: "1"}) {
+          nodes {
+            name
+            slug
+            uri
+            databaseId
+          }
+        }
+      }
+    `);
+  return data?.categories;
+}
+
+export async function getAllTagsWithSlug() {
+  const data = await fetchAPI(`
+      {
+        tags(first: 100, where: {exclude: "1"}) {
+          nodes {
+            name
+            slug
+            uri
+            databaseId
+          }
+        }
+      }
+    `);
+  return data?.tags;
+}
+
 export async function getAllPostsForHome(preview: boolean) {
   const data = await fetchAPI(
     `
@@ -123,6 +154,193 @@ export async function getAllPostsForHome(preview: boolean) {
   );
 
   return data?.posts;
+}
+
+export async function getPostsForSidebar(preview: boolean) {
+  const data = await fetchAPI(
+    `
+      query SidebarPosts {
+        category(id: "guides", idType: SLUG) {
+          posts(first: 3, where: {orderby: {field: DATE, order: DESC}}) {
+            nodes {
+              title
+              excerpt
+              slug
+              date
+              databaseId
+              featuredImage {
+                node {
+                  sourceUrl
+                }
+              }
+              author {
+                node {
+                  name
+                  firstName
+                  lastName
+                  avatar {
+                    url
+                  }
+                }
+              }
+              categories {
+                nodes {
+                  description
+                  name
+                  slug
+                  uri
+                }
+              }
+              tags {
+                nodes {
+                  name
+                  slug
+                  uri
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        onlyEnabled: !preview,
+        preview,
+      },
+    }
+  );
+
+  return data?.category.posts;
+}
+
+export async function getPostsForCategoryPage(
+  preview: boolean,
+  id: string | string[],
+  {currentPage = 1, ...options} = {}
+) {
+  const data = await fetchAPI(
+    `
+      query allPosts($id: ID!) {
+        category(id: $id, idType: SLUG) {
+          posts(first: 3, where: {orderby: {field: DATE, order: DESC}}) {
+            nodes {
+              title
+              excerpt
+              slug
+              date
+              databaseId
+              featuredImage {
+                node {
+                  sourceUrl
+                }
+              }
+              author {
+                node {
+                  name
+                  firstName
+                  lastName
+                  avatar {
+                    url
+                  }
+                }
+              }
+              categories {
+                nodes {
+                  description
+                  name
+                  slug
+                  uri
+                }
+              }
+              tags {
+                nodes {
+                  name
+                  slug
+                  uri
+                }
+              }
+            }
+          },
+          description
+          name
+        }
+      }
+    `,
+    {
+      variables: {
+        onlyEnabled: !preview,
+        preview,
+        id,
+      },
+    }
+  );
+
+  return data?.category;
+}
+
+export async function getPostsForTagPage(
+  preview: boolean,
+  id: string | string[]
+) {
+  const data = await fetchAPI(
+    `
+      query allPosts($id: ID!) {
+        tag(id: $id, idType: SLUG) {
+          posts(first: 3, where: {orderby: {field: DATE, order: DESC}}) {
+            nodes { 
+              title
+              excerpt
+              slug
+              date
+              databaseId
+              featuredImage {
+                node {
+                  sourceUrl
+                }
+              }
+              author {
+                node {
+                  name
+                  firstName
+                  lastName
+                  avatar {
+                    url
+                  }
+                }
+              }
+              categories {
+                nodes {
+                  description
+                  name
+                  slug
+                  uri
+                }
+              }
+              tags {
+                nodes {
+                  name
+                  slug
+                  uri
+                }
+              }
+            }
+          },
+          description
+          name
+        }
+      }
+    `,
+    {
+      variables: {
+        onlyEnabled: !preview,
+        preview,
+        id,
+      },
+    }
+  );
+
+  return data?.tag;
 }
 
 export async function getPostAndMorePosts(
@@ -211,7 +429,7 @@ export async function getPostAndMorePosts(
               : ""
           }
         }
-        posts(first: 3, where: { orderby: { field: DATE, order: DESC } }) {
+        posts(first: 10, where: { orderby: { field: DATE, order: DESC } }) {
           edges {
             node {
               ...PostFields

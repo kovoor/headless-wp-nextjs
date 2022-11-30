@@ -1,3 +1,4 @@
+import { useMutation } from "@apollo/client";
 import { ChevronLeftIcon, HomeIcon } from "@heroicons/react/outline";
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import { User } from "@supabase/supabase-js";
@@ -12,10 +13,13 @@ import { Footer } from "../components/Footer";
 import { Apple } from "../components/Form/Apple";
 import { Google } from "../components/Form/Google";
 import { Header } from "../components/Header";
+import { MUTATION_REGISTER_USER } from "../data/users";
+import { getUser, handleWPSignUp } from "../lib/users";
 import { supabase } from "../utils/supabase";
 
 const SignUp = () => {
   const [newUser, setNewUser] = useState<User | null>(null);
+  const [userExists, setUserExists] = useState<User | null>();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -25,104 +29,164 @@ const SignUp = () => {
     content: "",
   });
 
-  const user = supabase.auth.user();
+  const [handleWPSignUp, { data, loading: mutationLoading, error: mutationError }] =
+    useMutation(MUTATION_REGISTER_USER, {
+      variables: {
+        input: {
+          clientMutationId: "RegisterUser",
+          username,
+          password,
+          email,
+        },
+      },
+    });
 
-  const outputData = async () => {
-    const { data, error } = await supabase.auth.api.listUsers();
-    console.log(data);
+  // getUser().then((user) => {
+  //   console.log(user);
+  //   setUserExists(user);
+  // });
+
+  // useEffect(() => {
+  //   // console.log(props?.router?.query.reset);
+  //   // if (props?.router?.query.reset === "success") {
+  //   //   setMessage({ type: "success", content: "Password reset successfully" });
+  //   // }
+
+  //   if (userExists !== null) {
+  //     router.replace("/account");
+  //   }
+
+  // }, [userExists]);
+
+  if (userExists) {
+    return null;
+  }
+
+  useEffect(() => {
+    // if (userExists !== null) {
+    //   // router.push("/account");
+    // }
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log(event, session)
+    })
+
+    getUser().then((user) => {
+      // setUserExists(user)
+      console.log(user)
+      if(user) {
+        router.push('/')
+      }
+    })
+
+    // if(userExists) {
+    //   router.push('/')
+    // }
+
+    // if (newUser !== null) {
+    //   router.push("/");
+    // }
+  }, []);
+  // }, [userExists, newUser]);
+
+  /* const handleSignUp = async (
+    email: string,
+    username: string,
+    password: string
+  ) => {
+    try {
+      setLoading(true);
+      const { user, session, error } = await supabase.auth.signUp(
+        { email: email, password: password },
+        {
+          data: {
+            username: username,
+          },
+        }
+      );
+      if (error) throw error;
+      alert("Check your email for the login link!");
+      console.log(user)
+    } catch (error: any) {
+      alert(error.error_description || error.message);
+      console.log(error)
+    } finally {
+      setLoading(false);
+    }
   };
 
-  outputData;
+  const handleUpdate = async () => {
+    const { user, error } = await supabase.auth.update({
+      data: { username: "bacon" },
+    });
 
-  // const handleSignUp = async (
-  //   email: string,
-  //   username: string,
-  //   password: string
-  // ) => {
-  //   try {
-  //     setLoading(true);
-  //     const { user, session, error } = await supabase.auth.signUp(
-  //       { email: email, password: password },
-  //       {
-  //         data: {
-  //           username: username,
-  //         },
-  //       }
-  //     );
-  //     if (error) throw error;
-  //     alert("Check your email for the login link!");
-  //     console.log(user)
-  //   } catch (error: any) {
-  //     alert(error.error_description || error.message);
-  //     console.log(error)
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+    console.log(user);
+    console.log(error);
+  };
 
-  // const handleUpdate = async () => {
-  //   const { user, error } = await supabase.auth.update({
-  //     data: { username: "bacon" },
-  //   });
+  handleUpdate();*/
 
-  //   console.log(user);
-  //   console.log(error);
-  // };
+  //creates account in wordpress
 
-  // handleUpdate();
-
+  //creates account in supabase
   const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setLoading(true);
     setMessage({});
-    const { error, user: createdUser } = await supabase.auth.signUp(
-      { email: email, password: password },
-      {
+
+    console.log(email);
+
+    const { data: createdUser, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
         data: {
           username: username,
         },
-      }
-    );
+      },
+    })
+
+    console.log(email);
 
     if (error) {
       setMessage({ type: "error", content: error.message });
       console.log(error);
+      console.log(mutationError)
     } else {
-      if (createdUser) {
-        // await updateUserName(createdUser, name);
-        setNewUser(createdUser);
+      if (createdUser.user) {
+        setNewUser(createdUser.user);
+        console.log(newUser);
         console.log("acct created - success! ", createdUser);
-      } else {
-        setMessage({
-          type: "note",
-          content: "Check your email for the confirmation link.",
-        });
-      }
+
+        await handleWPSignUp({
+          variables: {
+            input: {
+              clientMutationId: "RegisterUser",
+              username,
+              password,
+              email,
+            },
+          },
+        })
+          .then(() => {
+            console.log("success", data);
+            setMessage({
+              type: "success",
+              content: "Just one more step. Please check your email for the confirmation link.",
+            });
+          })
+          .catch((error) => {
+            `Submission error! ${error.message}`;
+          });
+      } 
     }
     setLoading(false);
   };
 
-  // useEffect(() => {
-  //   if (newUser || user) {
-  //     router.replace("/");
-  //   }
-  // }, [newUser, user]);
-
-  useEffect(() => {
-    if (user !== null) {
-      router.replace("/account");
-    }
-  }, []);
-
-  if (user) {
-    return null;
-  }
-
   return (
     <div className="min-h-screen">
       <Head>
-        {/* TODO:Change below title */}
         <title>Create an Account</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -151,7 +215,7 @@ const SignUp = () => {
 
           {message.type === "success" && (
             <>
-              <SuccessAlert message={message.content} />
+              <SuccessAlert message={message.content} status={false} />
             </>
           )}
           {/* Sign Up form*/}
@@ -176,7 +240,9 @@ const SignUp = () => {
                 className="border rounded text-gray-600 my-2 px-4 py-1 w-full"
                 placeholder="Enter desired username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                }}
                 size={30}
                 id="username"
                 required
@@ -224,7 +290,9 @@ const SignUp = () => {
                   className="bg-blue-500 hover:bg-blue-800 shadow text-white font-bold my-2 py-2 px-2 rounded focus:ring-2 focus:outline-blue-300 w-36 disabled:transform-none disabled:transition-none disabled:bg-slate-400 disabled:cursor-not-allowed disabled:text-white"
                   onClick={() => handleSignUp}
                   type="submit"
-                  disabled={!password.length || !email.length || !username.length}
+                  disabled={
+                    !password.length || !email.length || !username.length
+                  }
                 >
                   {" "}
                   Sign up
@@ -245,7 +313,7 @@ const SignUp = () => {
             </span>
           </div>
 
-          <div className="flex flex-col w-96 self-center mt-8 border-t pt-6">
+          {/* <div className="flex flex-col w-96 self-center mt-8 border-t pt-6">
             <h2 className="text-xl font-Space-Grotesk font-semibold">
               Benefits of having an account
             </h2>
@@ -289,7 +357,7 @@ const SignUp = () => {
                 Ledger, Nansen.ai, Glassnode, and more{" "}
               </span>
             </div>
-          </div>
+          </div> */}
           <div className="flex w-96 self-center mt-4 space-x-1 justify-center">
             <Link href="/">
               <a className="group flex w-96 self-center mt-4 space-x-1 justify-center">

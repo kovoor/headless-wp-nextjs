@@ -90,3 +90,8 @@
   .content mark {
     @apply bg-purple-200
   }
+
+ 
+  .content #twitter-widget-0 iframe {
+    @apply justify-center align-middle ml-40
+  }

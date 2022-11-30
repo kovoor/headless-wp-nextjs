@@ -6,36 +6,85 @@ import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { supabase } from "../utils/supabase";
 import { Provider } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/router";
 import { Apple } from "../components/Form/Apple";
 import { Google } from "../components/Form/Google";
 import { SuccessAlert } from "../components/Alert/SuccessAlert";
 import { NoteAlert } from "../components/Alert/NoteAlert";
 import { ErrorAlert } from "../components/Alert/ErrorAlert";
+import { getUser } from "../lib/users";
 
 const Login = (props: any) => {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState<any>();
+  const [localEmail, setLocalEmail] = useState<string>();
+  const [rememberStatus, setRememberStatus] = useState<boolean>();
+  const [isRemember, setRemember] = useState<boolean | undefined>(
+    rememberStatus
+  );
+  const [userExists, setUserExists] = useState<User | null>();
   const [resetPassEmail, setResetPassEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [localPassword, setLocalPassword] = useState<string>();
+  const [password, setPassword] = useState<any>();
   const [loading, setLoading] = useState(false);
-  const [forgot, setForgot] = useState(false);
+  const [forgot, setForgot] = useState<boolean>(false);
   const [message, setMessage] = useState<{ type?: string; content?: string }>({
     type: "",
     content: "",
   });
-
-  const user = supabase.auth.user();
 
   useEffect(() => {
     // console.log(props?.router?.query.reset);
     // if (props?.router?.query.reset === "success") {
     //   setMessage({ type: "success", content: "Password reset successfully" });
     // }
-    if (user !== null) {
+
+    getUser().then((user) => {
+      setUserExists(user);
+      console.log(user);
+      if (user) {
+        router.push("/");
+      }
+    });
+
+    if (userExists) {
       router.push("/");
     }
-  }, [user]);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const remember = localStorage.getItem("remember");
+      const parsedRemember = JSON.parse(remember!);
+      setRememberStatus(parsedRemember);
+
+      if (remember === "true") {
+        var localEmail = localStorage.getItem("email");
+        console.log(localEmail);
+        setLocalEmail(localEmail!);
+        var localPassword = localStorage.getItem("password");
+        console.log(localPassword);
+        setLocalPassword(localPassword!);
+      } else {
+        localStorage.removeItem("email");
+        localStorage.removeItem("password");
+      }
+    }
+  }, [rememberStatus]);
+
+  useEffect(() => {
+    // console.log(router.query);
+    console.log(router.query.reset?.length !== 0)
+    // console.log(!router.query.reset)
+    if ((router.query.reset?.length !== 0)) {
+      setForgot(false);}
+    // } else {
+    //   setForgot(false);
+    // }
+  }, [router.query.reset]);
+
+  // }, [userExists]);
   // useEffect(() => {
   //   console.log(props?.router?.query.reset);
   //   if (props?.router?.query.reset === "success") {
@@ -56,13 +105,35 @@ const Login = (props: any) => {
     setLoading(true);
     setMessage({});
 
-    const { user, session, error } = await supabase.auth.signIn(
-      { email: email, password: password },
-      { redirectTo: "/" }
-    );
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (data.user !== null) {
+      console.log(data.user);
+      localStorage.setItem("email", data.user.email!);
+      localStorage.setItem("password", password);
+      router.push("/");
+    }
 
     if (error) {
+      console.log(error);
       setMessage({ type: "error", content: error.message });
+      //error resolution pathways
+      if (error.message === "Email not confirmed") {
+        await supabase.auth
+          .signInWithOtp({
+            email,
+          })
+          .then(() => {
+            setMessage({
+              type: "note",
+              content:
+                "A new verification email has been sent to your registered email address that you've confirm. Double-check your 'Spam' folder too.",
+            });
+          });
+      }
     }
     if (!password) {
       setMessage({
@@ -73,11 +144,12 @@ const Login = (props: any) => {
     setLoading(false);
   };
 
+  //handles sending email for reset user password and redirection to recovery page
   const handleResetPass = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    const { data, error } = await supabase.auth.api.resetPasswordForEmail(
+    const { data, error } = await supabase.auth.resetPasswordForEmail(
       resetPassEmail,
       {
         redirectTo: `${window.location.origin}/recovery`,
@@ -92,19 +164,23 @@ const Login = (props: any) => {
     }
   };
 
+  const handleRemember = () => {
+    setRemember(!isRemember);
+    setRememberStatus(!isRemember);
+    localStorage.setItem("remember", JSON.stringify(!isRemember));
+  };
+
   return (
     <div className="min-h-screen">
-      <Head>
-        {/* TODO:Change below title */}
+      {/* <Head>
         <title>Log into Account</title>
         <link rel="icon" href="/favicon.ico" />
-      </Head>
+      </Head> */}
 
       <Header />
 
       <main className="flex min-h-screen px-4 py-4 space-x-8 bg-slate-50 justify-center ">
         <div className="flex flex-1 flex-col lg:w-9/12 h-6/12 overflow-hidden flex-wrap">
-
           {message.type === "error" && (
             <div className="flex justify-center">
               <ErrorAlert message={message.content} />
@@ -169,13 +245,14 @@ const Login = (props: any) => {
                     id="password"
                     required
                   />
-                  <div className="flex justify-between flex-1 mt-2">
-                    <div className="flex space-x-2 justify-center items-center ">
-                      {/* TODO: Add localstorage persistence / cookie for this */}
+                  <div className="flex align-center justify-center w-full flex-1 mt-2">
+                    {/* <div className="flex space-x-2 justify-center items-center ">
                       <input
                         id="default-checkbox"
                         type="checkbox"
                         value=""
+                        checked={rememberStatus ? rememberStatus : isRemember}
+                        onChange={handleRemember}
                         className="w-4 h-4 cursor-pointer text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                       />
                       <label
@@ -184,12 +261,12 @@ const Login = (props: any) => {
                       >
                         Remember Me
                       </label>
-                    </div>
+                    </div> */}
                     <button
-                      className="bg-blue-500 hover:bg-blue-800 shadow text-white font-bold my-2 py-2 px-2 rounded w-24 focus:ring-2 focus:outline-blue-300 cursor-pointer disabled:transform-none disabled:transition-none disabled:bg-slate-400 disabled:cursor-not-allowed disabled:text-white"
+                      className="w-36   bg-blue-500 hover:bg-blue-800 shadow text-white font-bold my-2 py-2 px-2 rounded focus:ring-2 focus:outline-blue-300 cursor-pointer disabled:transform-none disabled:transition-none disabled:bg-slate-400 disabled:cursor-not-allowed disabled:text-white"
                       onClick={() => handleSignIn}
                       type="submit"
-                      disabled={!password.length || !email.length}
+                      disabled={!password?.length || !email?.length}
                     >
                       {" "}
                       Log in
@@ -227,11 +304,14 @@ const Login = (props: any) => {
             )}
           </div>
 
-          {forgot == false && (
+          {forgot === false && (
             <div className="flex w-96 self-center mt-4">
               <button
                 className="hover:underline cursor-pointer text-blue-400"
-                onClick={() => setForgot(true)}
+                onClick={() => {
+                  setForgot(true);
+                  router.push("/login?reset", undefined, { shallow: true });
+                }}
               >
                 Lost your password?
               </button>
@@ -242,7 +322,10 @@ const Login = (props: any) => {
             <div className="flex w-96 self-center mt-4">
               <button
                 className=" flex w-96 self-center space-x-1 hover:underline cursor-pointer text-blue-400 align-middle items-center"
-                onClick={() => setForgot(false)}
+                onClick={() => {
+                  setForgot(false);
+                  router.push("/login", undefined, { shallow: true });
+                }}
               >
                 <ChevronLeftIcon className="h-6 w-4 " />
                 Go back

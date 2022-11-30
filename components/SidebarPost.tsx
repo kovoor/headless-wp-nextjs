@@ -1,6 +1,23 @@
 import React from 'react'
+import Date from "./Date";
 
-export const SidebarPost = () => {
+export const SidebarPost = ({
+  title,
+  coverImage,
+  date,
+  excerpt,
+  author,
+  slug,
+  tags,
+  categories
+}: any) => {
+
+  const name = author
+    ? author.firstName && author.lastName
+      ? `${author.firstName} ${author.lastName}`
+      : author.name
+    : null
+
   return (
     <div className='flex-col border bg-white rounded-md px-4 py-4  w-full cursor-pointer'>
       
@@ -8,41 +25,34 @@ export const SidebarPost = () => {
       <div className="flex w-full h-44">
         <img
           className="object-cover w-full h-full"
-          src="https://images.unsplash.com/photo-1642104704074-907c0698cbd9"
+          src={coverImage?.sourceUrl}
         />
       </div>
 
       {/* Post Title */}
       <div className="group flex flex-col flex-1 px-2">
         <h2 className="text-base font-bold mt-4 mb-2 font-Space-Grotesk group-hover:underline">
-          What is ERC-721? The Ethereum NFT Token Standard
+        {title}
         </h2>
 
         {/* Post Excerpt */}
         <div className="flex pt-1 max-h-9 sm:max-h-13 md:max-h-12 lg:max-h-16 w-full line-clamp-3 whitespace-normal text-ellipsis overflow-hidden">
-          <p className="text-gray-500 text-xs md:text-sm lg:text-md xl:text-md">
-            ERC-721 is a token standard for non-fungible tokens on Ethereum. A
-            pillar of the ecosystem, it supports billions of dollars worth of
-            NFTs. pillar of the ecosystem, it supports billions of dollars worth
-            of NFTs. pillar of the ecosystem, it supports billions of dollars
-            worth of NFTs. pillar of the ecosystem, it supports billions of
-            dollars worth of NFTs pillar of the ecosystem, it supports billions
-            of dollars worth of NFTs. pillar of the ecosystem, it supports
-            billions of dollars worth of NFTs
-          </p>
+          <div className="text-gray-500 text-xs md:text-sm lg:text-md xl:text-md" dangerouslySetInnerHTML={{ __html: excerpt }} />
         </div>
 
         {/* Tags */}
         <div className="flex flex-col mt-4">
           {/* Author + Date */}
           <div className="flex text-xs font-semibold font-Space-Grotesk">
-            <span>Guides,</span>
-            <span className="pl-1">Ethereum</span>
+            <span>{tags.nodes.length > 0 ? categories.nodes[0].name + "," : categories.nodes[0].name}</span>
+            {
+              tags.nodes.length > 0 ? <span className="pl-1">{tags?.nodes[0]?.name}</span> : <></>
+            }
           </div>
 
           <div className="flex space-x-2 text-xs h-fit mt-2">
-            <span>Jake Kovoor</span>
-            <span className="pl-2 border-l">May 26, 2022</span>
+            <span>{name}</span>
+            <span className="pl-2 border-l"><Date className="pl-2 border-l" dateString={date} /></span>
           </div>
         </div>
       </div>
