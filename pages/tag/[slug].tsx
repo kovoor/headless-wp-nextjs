@@ -7,10 +7,9 @@ import { Header } from "../../components/Header";
 import { Pagination } from "../../components/Pagination";
 import { Post } from "../../components/Post";
 import {
-  getAllPostsForHome,
   getAllTagsWithSlug,
   getPostsForTagPage,
-} from "../../lib/api";
+} from "../../lib/postQueryFunctions";
 
 const Tag = ({ allPosts: { posts, description, name } }: any) => {
   return (
@@ -42,25 +41,25 @@ const Tag = ({ allPosts: { posts, description, name } }: any) => {
 
           {/* Posts Vertically – 5 min-h-screen */}
           <div className="flex flex-col space-y-1 mt-4 overflow-hidden">
-          {posts.nodes.map((post: any) => (
-          <div key={post.slug}>
-          <Link href={`/post/${post.databaseId}/${post.slug}`} prefetch={false}>
-            <a>
-              <Post
-                id={post.databaseId}
-                title= {post.title}
-                coverImage={post.featuredImage}
-                date={post.date}
-                author={post.author}
-                slug={post.slug}
-                excerpt={post.excerpt}
-                tags={post.tags}
-                categories={post.categories}
-              />
-            </a>
-          </Link>
-          </div>
-        ))}
+            {posts ? (
+              posts?.map((post: any) => (
+                <div key={post.slug}>
+                  <Post
+                    id={post.databaseId}
+                    title={post.title}
+                    coverImage={post.featuredImage}
+                    date={post.date}
+                    author={post.author}
+                    slug={post.slug}
+                    excerpt={post.excerpt}
+                    tags={post.tags}
+                    categories={post.categories}
+                  />
+                </div>
+              ))
+            ) : (
+              <></>
+            )}
           </div>
 
           {/* Pagination Buttons */}
@@ -77,8 +76,8 @@ const Tag = ({ allPosts: { posts, description, name } }: any) => {
   );
 };
 
-export async function getStaticPaths() {
-  const allPosts = await getAllTagsWithSlug();
+export async function getStaticPaths({ preview = false }) {
+  const allPosts = await getAllTagsWithSlug(preview);
   console.log(allPosts);
 
   return {

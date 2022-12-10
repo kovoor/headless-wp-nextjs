@@ -13,8 +13,8 @@ import { Footer } from "../components/Footer";
 import { Apple } from "../components/Form/Apple";
 import { Google } from "../components/Form/Google";
 import { Header } from "../components/Header";
-import { MUTATION_REGISTER_USER } from "../data/users";
-import { getUser, handleWPSignUp } from "../lib/users";
+import { MUTATION_REGISTER_USER } from "../data/userQueries";
+import { getUser, handleWPSignUp } from "../lib/userQueryFunctions";
 import { supabase } from "../utils/supabase";
 
 const SignUp = () => {

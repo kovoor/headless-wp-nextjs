@@ -7,8 +7,9 @@ import { NoteAlert } from "../../components/Alert/NoteAlert";
 import { SuccessAlert } from "../../components/Alert/SuccessAlert";
 import { Header } from "../../components/Header";
 import { supabase } from "../../utils/supabase";
-import { Router, useRouter } from "next/router";
-import { getAuthors, getUser } from "../../lib/users";
+import { useRouter } from "next/router";
+import { getAuthors } from "../../lib/userQueryFunctions";
+import { getUser } from "../../lib/userSupabaseFunctions";
 
 export const UserProfile = ({ data, isAuthor }: any) => {
   const [username, setUsername] = useState("");

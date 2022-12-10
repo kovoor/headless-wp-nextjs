@@ -1,4 +1,3 @@
-import { resultKeyNameFromField } from "@apollo/client/utilities";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
@@ -8,9 +7,10 @@ import { ErrorAlert } from "../components/Alert/ErrorAlert";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { Sidebar } from "../components/Sidebar";
-import { getAllPostsForHome, getPostsForSidebar } from "../lib/api";
-import { getPaginatedPosts, getSidebarPosts } from "../lib/posts";
-import { getUser } from "../lib/users";
+import {
+  getPaginatedPosts,
+  getHomepageSidebarPosts,
+} from "../lib/postQueryFunctions";
 import { supabase } from "../utils/supabase";
 import { useRouter } from "next/router";
 import { SuccessAlert } from "../components/Alert/SuccessAlert";
@@ -19,20 +19,19 @@ const Home: NextPage = ({ posts, sidebarPosts, preview, pagination }: any) => {
   const [x, setX] = useState<any>();
   const [resetStatus, setResetStatus] = useState<any>();
   const [createUserStatus, setCreateUserStatus] = useState<any>();
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
-
     supabase.auth.onAuthStateChange((event, session) => {
-      console.log(event, session)
-      if(session?.provider_refresh_token && session?.provider_token) {
-        setCreateUserStatus(true)
+      console.log(event, session);
+      if (session?.provider_refresh_token && session?.provider_token) {
+        setCreateUserStatus(true);
       }
-    })
+    });
 
-    const { reset } = router.query
-    if(reset) {
-      setResetStatus(reset)
+    const { reset } = router.query;
+    if (reset) {
+      setResetStatus(reset);
     }
 
     var hash = window!.location.hash.substr(1);
@@ -42,11 +41,8 @@ const Home: NextPage = ({ posts, sidebarPosts, preview, pagination }: any) => {
       return res;
     }, {});
     // console.log(result);
-    setX(result)
+    setX(result);
   }, []);
-
-
-
 
   // if (typeof window !== "undefined") {
   //   var hash = window!.location.hash.substr(1);
@@ -71,7 +67,7 @@ const Home: NextPage = ({ posts, sidebarPosts, preview, pagination }: any) => {
 
       {x?.error && (
         <div className=" bg-slate-50">
-          <ErrorAlert message={x.error_description.split('+').join(' ')} />
+          <ErrorAlert message={x.error_description.split("+").join(" ")} />
         </div>
       )}
 
@@ -87,8 +83,6 @@ const Home: NextPage = ({ posts, sidebarPosts, preview, pagination }: any) => {
         </div>
       )}
 
-
-
       <main className="flex min-h-screen px-4 py-4 space-x-8 bg-slate-50">
         <Feed posts={posts} pagination={pagination} />
         <Sidebar posts={sidebarPosts} />
@@ -103,7 +97,7 @@ export async function getStaticProps({ preview = false }) {
   const { posts, pagination } = await getPaginatedPosts(preview);
   // console.log(posts)
   const category = "guides";
-  const { sidebarPosts } = await getSidebarPosts(preview, category);
+  const { sidebarPosts } = await getHomepageSidebarPosts(preview, category);
 
   supabase.auth.onAuthStateChange((event, session) => {
     console.log(event, session);

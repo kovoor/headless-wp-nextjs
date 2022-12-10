@@ -9,12 +9,12 @@ import { RelatedPost } from "../../../components/RelatedPost";
 import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { getAllPostsWithSlug, getPostAndMorePosts } from "../../../lib/api";
 import Date from "../../../components/Date";
 import PostBody from "../../../components/Post/PostBody";
 import { supabase } from "../../../utils/supabase";
 import { User } from "@supabase/supabase-js";
-import { getUser } from "../../../lib/users";
+import { getUser } from "../../../lib/userSupabaseFunctions";
+import { getAllPostsWithSlug, getPostAndMorePosts } from "../../../lib/postQueryFunctions";
 
 export const Post = ({ post, posts, preview, user }: any) => {
   // const router = useRouter();
@@ -44,6 +44,10 @@ export const Post = ({ post, posts, preview, user }: any) => {
 
   const username = post?.author.node.name;
 
+  console.log(post.tags.edges[0].node.name)
+  console.log(post?.tags.edges.length)
+
+
   return (
     <div>
       <Header />
@@ -68,23 +72,29 @@ export const Post = ({ post, posts, preview, user }: any) => {
                   <a>{post?.categories.edges[0].node.name}</a>
                 </Link>
               </span>
-              {post?.tags.length > 0 ? (
+              {post?.tags.edges.length > 0 ? (
                 <ArrowSmRightIcon className="h-5 w-5 text-slate-500" />
               ) : (
                 <></>
               )}
+
+              {
+                post?.tags.edges.map((tag: any) => {
+                  
+                })
+              }
               <span className="hover:underline hover:text-black cursor-pointer">
                 <Link
                   href={
-                    post?.tags.length > 0
+                    post?.tags.edges.length > 0
                       ? `/tag/${post?.tags?.edges[0].node.slug}`
                       : ""
                   }
                   prefetch={false}
                 >
                   <a>
-                    {post?.tags.length > 0 ? (
-                      post.tags.edges[0].node.name
+                    {post?.tags.edges.length > 0 ? (
+                      post.tags.edges[0].nodes
                     ) : (
                       <></>
                     )}
@@ -134,7 +144,7 @@ export const Post = ({ post, posts, preview, user }: any) => {
                 </div>
               </div>
               {/* Featured Image + Caption */}
-              <figure className="flex flex-col mt-8">
+              <figure className="flex flex-col mt-8 ">
                 <img
                   className="object-cover w-full h-full md:w-9/12 md:h-9/12 self-center"
                   src={post?.featuredImage?.node.sourceUrl}
@@ -245,9 +255,7 @@ export async function getStaticProps({
   preview = false,
   previewData,
 }: any) {
-  const data = await getPostAndMorePosts(params.slug, preview, previewData);
-
-
+  const {data} = await getPostAndMorePosts(params.slug, preview, previewData);
   return {
     props: {
       preview,
@@ -258,8 +266,8 @@ export async function getStaticProps({
   };
 }
 
-export async function getStaticPaths() {
-  const allPosts = await getAllPostsWithSlug();
+export async function getStaticPaths({ preview = false }) {
+  const allPosts = await getAllPostsWithSlug(preview);
   console.log(allPosts);
 
   return {

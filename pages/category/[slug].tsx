@@ -5,14 +5,14 @@ import { Footer } from "../../components/Footer";
 import { Header } from "../../components/Header";
 import { Pagination } from "../../components/Pagination";
 import { Post } from "../../components/Post";
-import { getAllCategoriesWithSlug } from "../../lib/api";
-import { getPostsForCategoryPage } from "../../lib/posts";
+import { getAllCategoriesWithSlug, getPostsForCategoryPage } from "../../lib/postQueryFunctions";
 
-const Category = ({posts, pagination}: any) => {
+const Category = ({ posts, categoryDetails, pagination }: any) => {
+  console.log(categoryDetails);
   return (
     <div className="min-h-screen overflow-hidden">
       <Head>
-        <title>{posts?.name}</title>
+        <title>{categoryDetails.name}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -28,41 +28,44 @@ const Category = ({posts, pagination}: any) => {
           </div>
           <div className="flex">
             <h2 className="font-Space-Grotesk text-2xl xl:text-3xl font-bold mt-2">
-              {posts?.name}
+              {categoryDetails.name}
             </h2>
           </div>
           <div>
-            <p className="text-sm mt-2 ">
-              {posts?.description}
-            </p>
+            <p className="text-sm mt-2 ">{categoryDetails.description}</p>
           </div>
 
           {/* 5 Posts Vertically */}
           <div className="flex flex-col space-y-1 mt-4 overflow-hidden">
-
-          {posts ? posts?.map((post: any) => (
-          <div key={post.slug}>
-              <Post
-                id={post.databaseId}
-                title= {post.title}
-                coverImage={post.featuredImage}
-                date={post.date}
-                author={post.author}
-                slug={post.slug}
-                excerpt={post.excerpt}
-                tags={post.tags}
-                categories={post.categories}
-              />
-          </div>
-        )) : <></>}
+            {posts ? (
+              posts?.map((post: any) => (
+                <div key={post.slug}>
+                  <Post
+                    id={post.databaseId}
+                    title={post.title}
+                    coverImage={post.featuredImage}
+                    date={post.date}
+                    author={post.author}
+                    slug={post.slug}
+                    excerpt={post.excerpt}
+                    tags={post.tags}
+                    categories={post.categories}
+                  />
+                </div>
+              ))
+            ) : (
+              <></>
+            )}
           </div>
 
           {/* Pagination Buttons */}
           <div>
-            <Pagination             addCanonical={false}
-            currentPage={pagination?.currentPage}
-            pagesCount={pagination?.pagesCount}
-            basePath={pagination?.basePath}/>
+            <Pagination
+              addCanonical={false}
+              currentPage={pagination?.currentPage}
+              pagesCount={pagination?.pagesCount}
+              basePath={pagination?.basePath}
+            />
           </div>
         </div>
       </main>
@@ -74,29 +77,36 @@ const Category = ({posts, pagination}: any) => {
   );
 };
 
-export async function getStaticPaths() {
-  const allPosts = await getAllCategoriesWithSlug();
+export async function getStaticPaths({ preview = false }) {
+  const allPosts = await getAllCategoriesWithSlug(preview);
   console.log(allPosts);
 
   return {
-    paths:
-      allPosts.nodes.map(
-        (post: any) => `/category/${post.slug}`
-      ) || [],
+    paths: allPosts.nodes.map((post: any) => `/category/${post.slug}`) || [],
     fallback: true,
   };
 }
 
 export async function getStaticProps({ preview = false, params }: any) {
   const id = params.slug;
-  const {posts, pagination} = await getPostsForCategoryPage(preview, id);
+  const { posts, pagination, categoryDetails } = await getPostsForCategoryPage(
+    preview,
+    id
+  );
 
-  console.log('New', posts)
+  console.log("New", posts);
   return {
-    props: { posts, preview, pagination: {
-      ...pagination,
-      basePath: "/",
-    } }, revalidate: 10 }
+    props: {
+      posts,
+      categoryDetails,
+      preview,
+      pagination: {
+        ...pagination,
+        basePath: "/",
+      },
+    },
+    revalidate: 10,
+  };
 }
 
 export default Category;

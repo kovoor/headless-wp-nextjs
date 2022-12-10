@@ -9,7 +9,7 @@ import { ErrorAlert } from "../components/Alert/ErrorAlert";
 import { NoteAlert } from "../components/Alert/NoteAlert";
 import { SuccessAlert } from "../components/Alert/SuccessAlert";
 import { Header } from "../components/Header";
-import { getUser } from "../lib/users";
+import { getUser } from "../lib/userQueryFunctions";
 import { supabase } from "../utils/supabase";
 
 const Recovery = () => {

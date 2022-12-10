@@ -13,7 +13,7 @@ import { Google } from "../components/Form/Google";
 import { SuccessAlert } from "../components/Alert/SuccessAlert";
 import { NoteAlert } from "../components/Alert/NoteAlert";
 import { ErrorAlert } from "../components/Alert/ErrorAlert";
-import { getUser } from "../lib/users";
+import { getUser } from "../lib/userQueryFunctions";
 
 const Login = (props: any) => {
   const router = useRouter();

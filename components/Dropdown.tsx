@@ -6,7 +6,7 @@ import { supabase } from "../utils/supabase";
 import router from "next/router";
 import Link from "next/link";
 import { Session, User } from "@supabase/supabase-js";
-import { getSession, getUser, signOutUser } from "../lib/users";
+import { getSession, getUser, signOutUser } from "../lib/userSupabaseFunctions";
 
 // const handleSignOut = async () => {
 //   signOutUser().then((data) => {
