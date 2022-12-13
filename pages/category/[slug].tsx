@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Link from "next/link";
 import React from "react";
 import { Footer } from "../../components/Footer";
 import { Header } from "../../components/Header";
@@ -8,7 +7,7 @@ import { Post } from "../../components/Post";
 import { getAllCategoriesWithSlug, getPostsForCategoryPage } from "../../lib/postQueryFunctions";
 
 const Category = ({ posts, categoryDetails, pagination }: any) => {
-  console.log(categoryDetails);
+
   return (
     <div className="min-h-screen overflow-hidden">
       <Head>
@@ -34,6 +33,7 @@ const Category = ({ posts, categoryDetails, pagination }: any) => {
           <div>
             <p className="text-sm mt-2 ">{categoryDetails.description}</p>
           </div>
+          
 
           {/* 5 Posts Vertically */}
           <div className="flex flex-col space-y-1 mt-4 overflow-hidden">
@@ -45,7 +45,7 @@ const Category = ({ posts, categoryDetails, pagination }: any) => {
                     title={post.title}
                     coverImage={post.featuredImage}
                     date={post.date}
-                    author={post.author}
+                    author={post.author.node}
                     slug={post.slug}
                     excerpt={post.excerpt}
                     tags={post.tags}
@@ -79,7 +79,6 @@ const Category = ({ posts, categoryDetails, pagination }: any) => {
 
 export async function getStaticPaths({ preview = false }) {
   const allPosts = await getAllCategoriesWithSlug(preview);
-  console.log(allPosts);
 
   return {
     paths: allPosts.nodes.map((post: any) => `/category/${post.slug}`) || [],
@@ -94,7 +93,6 @@ export async function getStaticProps({ preview = false, params }: any) {
     id
   );
 
-  console.log("New", posts);
   return {
     props: {
       posts,

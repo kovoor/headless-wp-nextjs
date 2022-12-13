@@ -43,9 +43,6 @@ export async function getAllPostsWithSlug(preview: boolean) {
     },
   });
 
-  console.log(data)
-
-
   return data?.data.posts;
 }
 
@@ -59,9 +56,6 @@ export async function getAllCategoriesWithSlug(preview: boolean) {
       preview,
     },
   });
-
-  console.log(data)
-
   return data?.data.categories;
 }
 
@@ -76,7 +70,6 @@ export async function getAllTagsWithSlug(preview: boolean) {
     },
   });
 
-  console.log(data)
   return data?.data.tags;
 }
 
@@ -108,8 +101,6 @@ export async function getPostsForCategoryPage(
 ) {
   const apolloClient = getApolloClient();
 
-  console.log(id);
-
   let page = Number(currentPage);
   const postsPerPage: any = await getPostsPerPage();
 
@@ -122,11 +113,7 @@ export async function getPostsForCategoryPage(
     },
   });
 
-  console.log("Category posts", data.data.category.posts.nodes);
-
   const categoryDetails = data.data.category;
-
-  console.log(categoryDetails);
 
   const posts = data.data.category.posts.nodes;
 
@@ -164,9 +151,6 @@ export async function getPostsForTagPage(
   { currentPage = 1, ...options } = {}
 ) {
   const apolloClient = getApolloClient();
-
-  console.log(id);
-
   let page = Number(currentPage);
   const postsPerPage: any = await getPostsPerPage();
 
@@ -178,15 +162,8 @@ export async function getPostsForTagPage(
       id,
     },
   });
-
-  console.log("Tag posts", data.data.tag.posts.nodes);
-
   const tagDetails = data.data.tag;
-
-  console.log(tagDetails);
-
   const posts = data.data.tag.posts.nodes;
-
   const pagesCount: any = await getPagesCount(posts, postsPerPage);
 
   if (typeof page === "undefined" || isNaN(page)) {
@@ -298,7 +275,7 @@ export async function getPostAndMorePosts(
   const isDraft = isSamePost && postPreview?.status === "draft";
   const isRevision = isSamePost && postPreview?.status === "publish";
 
-  const data = await apolloClient.query({
+  const {data} = await apolloClient.query({
     query: gql`
     fragment AuthorFields on User {
       name
@@ -388,24 +365,22 @@ export async function getPostAndMorePosts(
   });
 
   // Draft posts may not have an slug
-  if (isDraft) data.post.slug = postPreview.id;
-  // Apply a revision (changes in a published post)
-  if (isRevision && data.post.revisions) {
-    const revision = data?.post?.revisions?.edges[0]?.node;
+  if (isDraft) data.data.post.slug = postPreview.id;
 
-    if (revision) Object.assign(data.post, revision);
-    delete data.post.revisions;
+  // Apply a revision (changes in a published post)
+  if (isRevision && data.data.post.revisions) {
+    const revision = data?.data.post?.revisions?.edges[0]?.node;
+
+    if (revision) Object.assign(data.data.post, revision);
+    delete data.data.post.revisions;
   }
 
   // Filter out the main post
-  console.log(data.posts?.edges)
-  if(data?.posts?.edges) {
-    data.posts.edges = data?.posts?.edges.filter(
+    const data2 = data?.posts?.edges.filter(
       ({ node }: any) => node.slug !== slug
     );
-  }
+  // }
   // If there are still 3 posts, remove the last one
-  if (data?.posts?.edges.length > 2) data.posts.edges.pop();
-
-  return data;
+  if (data2?.length > 2) data2.pop();
+  return {data, data2};
 }

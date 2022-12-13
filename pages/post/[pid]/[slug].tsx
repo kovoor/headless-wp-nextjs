@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Footer } from "../../../components/Footer";
 import { Header } from "../../../components/Header";
 import { CalendarIcon } from "@heroicons/react/outline";
+import { HashtagIcon } from "@heroicons/react/outline";
 import { FolderIcon } from "@heroicons/react/outline";
 import { ArrowSmRightIcon } from "@heroicons/react/outline";
 import { RelatedPost } from "../../../components/RelatedPost";
@@ -14,26 +15,21 @@ import PostBody from "../../../components/Post/PostBody";
 import { supabase } from "../../../utils/supabase";
 import { User } from "@supabase/supabase-js";
 import { getUser } from "../../../lib/userSupabaseFunctions";
-import { getAllPostsWithSlug, getPostAndMorePosts } from "../../../lib/postQueryFunctions";
+import {
+  getAllPostsWithSlug,
+  getPostAndMorePosts,
+} from "../../../lib/postQueryFunctions";
+import { Form } from "../../../components/Newsletter/Form";
 
 export const Post = ({ post, posts, preview, user }: any) => {
   // const router = useRouter();
   const morePosts = posts?.edges;
   const [userExists, setUserExists] = useState<User | null>();
-  const [email, setEmail] = useState("");
-
-  const handleNewsletterSub = () => {};
-
-  // if (!router.isFallback && !post?.slug) {
-  //   return <ErrorPage statusCode={404} />
-  // }
 
   useEffect(() => {
     getUser().then((user) => {
-      console.log(user)
-      setUserExists(user)
-      console.log(userExists)
-    })
+      setUserExists(user);
+    });
   }, [userExists]);
 
   const name = post?.author
@@ -44,9 +40,7 @@ export const Post = ({ post, posts, preview, user }: any) => {
 
   const username = post?.author.node.name;
 
-  console.log(post.tags.edges[0].node.name)
-  console.log(post?.tags.edges.length)
-
+  const tagsList = post?.tags.edges.map((tag: any) => tag.node);
 
   return (
     <div>
@@ -54,7 +48,6 @@ export const Post = ({ post, posts, preview, user }: any) => {
 
       <article>
         <Head>
-          {/* TODO:Change below title */}
           <title>{post?.title}</title>
           <link rel="icon" href="/favicon.ico" />
         </Head>
@@ -72,35 +65,38 @@ export const Post = ({ post, posts, preview, user }: any) => {
                   <a>{post?.categories.edges[0].node.name}</a>
                 </Link>
               </span>
+
               {post?.tags.edges.length > 0 ? (
-                <ArrowSmRightIcon className="h-5 w-5 text-slate-500" />
+                <div className="flex flex-row flex-1 ">
+                  <ArrowSmRightIcon className="h-5 w-5 text-slate-500" />
+                  <span className="flex flex-row justify-start	pl-2">
+                    {tagsList.map(function (tag: any, index: any) {
+                      return (
+                        <span key={`${tag.slug}-${index}`}>
+                          <Link
+                            href={`/tag/${tag.slug}`}
+                            prefetch={false}
+                            passHref
+                          >
+                            <a>
+                              <span className="flex flex-row font-black text-base font-Space-Grotesk">
+                                {index ? "," : ""}
+                                <div className="group"></div>
+                                <HashtagIcon className="pl-1 h-5 w-5 text-slate-500" />
+                                <span className="text-sm hover:underline hover:text-black cursor-pointer">
+                                  {tag.name}
+                                </span>
+                              </span>
+                            </a>
+                          </Link>
+                        </span>
+                      );
+                    })}
+                  </span>
+                </div>
               ) : (
                 <></>
               )}
-
-              {
-                post?.tags.edges.map((tag: any) => {
-                  
-                })
-              }
-              <span className="hover:underline hover:text-black cursor-pointer">
-                <Link
-                  href={
-                    post?.tags.edges.length > 0
-                      ? `/tag/${post?.tags?.edges[0].node.slug}`
-                      : ""
-                  }
-                  prefetch={false}
-                >
-                  <a>
-                    {post?.tags.edges.length > 0 ? (
-                      post.tags.edges[0].nodes
-                    ) : (
-                      <></>
-                    )}
-                  </a>
-                </Link>
-              </span>
             </div>
           </div>
 
@@ -129,10 +125,6 @@ export const Post = ({ post, posts, preview, user }: any) => {
                         <></>
                       )}
                     </span>
-                    {/* <span className="">and </span>
-                    <span className="hover:text-black cursor-pointer">
-                      <Link href="/profile/janekovoor">Jane Kovoor</Link>
-                    </span> */}
                   </span>
                   <div className="group flex flex-row space-x-1">
                     <CalendarIcon className="h-4 w-4 text-slate-500" />
@@ -166,41 +158,7 @@ export const Post = ({ post, posts, preview, user }: any) => {
           </main>
 
           {/* TODO: Add appearing button conditionally */}
-          {userExists ? (
-            <></>
-          ) : (
-            <div className="flex flex-1 mb-10 bg-slate-100 mx-8 justify-center md:self-center md:w-4/6 lg:w-3/6 rounded-md border">
-              <div className="flex flex-col py-4">
-                {/* TODO: Hide if the user is alr logged in */}
-                <h2 className="font-Space-Grotesk text-xl font-semibold text-center">
-                  Subscribe to Our Newsletter
-                </h2>
-                <div className="flex justify-center space-x-3">
-                  {/* TODO: Add email pattern validation */}
-                  <input
-                    type="email"
-                    className="shadow border rounded text-gray-600 my-2 px-4 py-1"
-                    placeholder="satoshi@gmail.com"
-                    size={30}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    id="email"
-                    required
-                  />
-                  <button
-                    className="bg-purple-500 hover:bg-purple-700 shadow text-white font-bold my-2 py-2 px-2 rounded focus:outline-none focus:shadow-outline disabled:transform-none disabled:transition-none disabled:bg-slate-400 disabled:cursor-not-allowed disabled:text-white"
-                    type="button"
-                    // TODO: Add this state management + form with external newsletter management api
-                    onClick={() => handleNewsletterSub()}
-                    disabled={!email.length}
-                  >
-                    {" "}
-                    I'm ready
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* {userExists ? <></> : <Form />} */}
 
           {/* TODO: Add comments section */}
           <div className="flex flex-1 px-6 py-2">
@@ -220,8 +178,9 @@ export const Post = ({ post, posts, preview, user }: any) => {
 
               {/* flex flex-1 space-x-2 mt-4 justify-center w-80 h-full flex-wrap overflow-auto  md:w-3/4 h-96 lg:h-full */}
               <div className="flex flex-row mt-4 md:space-x-2 space-x-1 overflow-hidden w-full justify-center md:w-3/4 md:self-center flex-wrap max-w-full max-h-96">
-                {posts.edges.map(({ node }: any) => (
-                  <div key={node.slug}>{" "}
+                {posts.map(({ node }: any) => (
+                  <div key={node.slug}>
+                    {" "}
                     <RelatedPost
                       id={node.databaseId}
                       title={node.title}
@@ -255,12 +214,16 @@ export async function getStaticProps({
   preview = false,
   previewData,
 }: any) {
-  const {data} = await getPostAndMorePosts(params.slug, preview, previewData);
+  const { data, data2 } = await getPostAndMorePosts(
+    params.slug,
+    preview,
+    previewData
+  );
   return {
     props: {
       preview,
       post: data.post,
-      posts: data.posts,
+      posts: data2,
     },
     revalidate: 10,
   };
@@ -268,8 +231,6 @@ export async function getStaticProps({
 
 export async function getStaticPaths({ preview = false }) {
   const allPosts = await getAllPostsWithSlug(preview);
-  console.log(allPosts);
-
   return {
     paths:
       allPosts.edges.map(

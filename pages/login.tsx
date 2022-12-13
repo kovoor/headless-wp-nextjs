@@ -13,7 +13,7 @@ import { Google } from "../components/Form/Google";
 import { SuccessAlert } from "../components/Alert/SuccessAlert";
 import { NoteAlert } from "../components/Alert/NoteAlert";
 import { ErrorAlert } from "../components/Alert/ErrorAlert";
-import { getUser } from "../lib/userQueryFunctions";
+import { getUser } from "../lib/userSupabaseFunctions";
 
 const Login = (props: any) => {
   const router = useRouter();
@@ -42,7 +42,7 @@ const Login = (props: any) => {
 
     getUser().then((user) => {
       setUserExists(user);
-      console.log(user);
+      // console.log(user);
       if (user) {
         router.push("/");
       }
@@ -53,51 +53,32 @@ const Login = (props: any) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const remember = localStorage.getItem("remember");
-      const parsedRemember = JSON.parse(remember!);
-      setRememberStatus(parsedRemember);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const remember = localStorage.getItem("remember");
+  //     const parsedRemember = JSON.parse(remember!);
+  //     setRememberStatus(parsedRemember);
 
-      if (remember === "true") {
-        var localEmail = localStorage.getItem("email");
-        console.log(localEmail);
-        setLocalEmail(localEmail!);
-        var localPassword = localStorage.getItem("password");
-        console.log(localPassword);
-        setLocalPassword(localPassword!);
-      } else {
-        localStorage.removeItem("email");
-        localStorage.removeItem("password");
-      }
-    }
-  }, [rememberStatus]);
+  //     if (remember === "true") {
+  //       var localEmail = localStorage.getItem("email");
+  //       setLocalEmail(localEmail!);
+  //       var localPassword = localStorage.getItem("password");
+  //       setLocalPassword(localPassword!);
+  //     } else {
+  //       localStorage.removeItem("email");
+  //       localStorage.removeItem("password");
+  //     }
+  //   }
+  // }, [rememberStatus]);
 
   useEffect(() => {
-    // console.log(router.query);
-    console.log(router.query.reset?.length !== 0)
-    // console.log(!router.query.reset)
+    // console.log(router.query.reset?.length !== 0)
     if ((router.query.reset?.length !== 0)) {
       setForgot(false);}
-    // } else {
-    //   setForgot(false);
-    // }
+
   }, [router.query.reset]);
 
-  // }, [userExists]);
-  // useEffect(() => {
-  //   console.log(props?.router?.query.reset);
-  //   if (props?.router?.query.reset === "success") {
-  //     setMessage({ type: "success", content: "Password reset successfully" });
-  //   }
-  //   if (user !== null) {
-  //     router.replace("/");
-  //   }
-  // }, [user, props?.router?.query]);
 
-  // if (user) {
-  //   return null;
-  // }
 
   const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -111,14 +92,12 @@ const Login = (props: any) => {
     });
 
     if (data.user !== null) {
-      console.log(data.user);
-      localStorage.setItem("email", data.user.email!);
-      localStorage.setItem("password", password);
+      // localStorage.setItem("email", data.user.email!);
+      // localStorage.setItem("password", password);
       router.push("/");
     }
 
     if (error) {
-      console.log(error);
       setMessage({ type: "error", content: error.message });
       //error resolution pathways
       if (error.message === "Email not confirmed") {
@@ -164,19 +143,14 @@ const Login = (props: any) => {
     }
   };
 
-  const handleRemember = () => {
-    setRemember(!isRemember);
-    setRememberStatus(!isRemember);
-    localStorage.setItem("remember", JSON.stringify(!isRemember));
-  };
+  // const handleRemember = () => {
+  //   setRemember(!isRemember);
+  //   setRememberStatus(!isRemember);
+  //   localStorage.setItem("remember", JSON.stringify(!isRemember));
+  // };
 
   return (
     <div className="min-h-screen">
-      {/* <Head>
-        <title>Log into Account</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head> */}
-
       <Header />
 
       <main className="flex min-h-screen px-4 py-4 space-x-8 bg-slate-50 justify-center ">
@@ -209,17 +183,6 @@ const Login = (props: any) => {
 
           {/* Login form  h-72*/}
           <div className="flex flex-col bg-slate-100 w-96 py-4 mt-6 p-8 rounded-md border border-slate-200 justify-center self-center">
-            {/* NextAuth comes here, tho */}
-            {/* Third Party OAuth + Username/Email & Password – Apple + Google only */}
-            {/* <div className="flex justify-evenly	">
-            <Apple />
-            <Google />
-            </div>
-            <div className="relative flex py-5 items-center">
-              <div className="flex-grow border-t border-gray-400"></div>
-              <span className="flex-shrink mx-4 text-gray-400">or</span>
-              <div className="flex-grow border-t border-gray-400"></div>
-            </div> */}
             {forgot == false && (
               <>
                 <form onSubmit={handleSignIn} method="POST">

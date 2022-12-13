@@ -170,12 +170,16 @@ export const QUERY_CATEGORY_POSTS = gql`
           }
           author {
             node {
-              name
+              avatar {
+                height
+                url
+                width
+              }
+              id
               firstName
               lastName
-              avatar {
-                url
-              }
+              name
+              slug
             }
           }
           categories {
@@ -219,12 +223,16 @@ export const QUERY_TAG_POSTS = gql`
           }
           author {
             node {
-              name
+              avatar {
+                height
+                url
+                width
+              }
+              id
               firstName
               lastName
-              avatar {
-                url
-              }
+              name
+              slug
             }
           }
           categories {

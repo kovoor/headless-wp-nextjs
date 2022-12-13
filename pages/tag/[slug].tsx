@@ -11,12 +11,12 @@ import {
   getPostsForTagPage,
 } from "../../lib/postQueryFunctions";
 
-const Tag = ({ allPosts: { posts, description, name } }: any) => {
+const Tag = ({ posts, tagDetails, pagination }: any) => {
   return (
     <div className="min-h-screen overflow-hidden">
       <Head>
         {/* TODO:Change below title */}
-        <title>{name}</title>
+        <title>{tagDetails.name}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -32,11 +32,11 @@ const Tag = ({ allPosts: { posts, description, name } }: any) => {
           </div>
           <div className="flex">
             <h2 className="font-Space-Grotesk text-2xl xl:text-3xl font-bold mt-2">
-              {name}
+              {tagDetails.name}
             </h2>
           </div>
           <div>
-            <p className="text-sm mt-2 ">{description} </p>
+            <p className="text-sm mt-2 ">{tagDetails.description}</p>
           </div>
 
           {/* Posts Vertically – 5 min-h-screen */}
@@ -49,7 +49,7 @@ const Tag = ({ allPosts: { posts, description, name } }: any) => {
                     title={post.title}
                     coverImage={post.featuredImage}
                     date={post.date}
-                    author={post.author}
+                    author={post.author.node}
                     slug={post.slug}
                     excerpt={post.excerpt}
                     tags={post.tags}
@@ -64,7 +64,12 @@ const Tag = ({ allPosts: { posts, description, name } }: any) => {
 
           {/* Pagination Buttons */}
           <div>
-            <Pagination />
+            <Pagination
+              addCanonical={false}
+              currentPage={pagination?.currentPage}
+              pagesCount={pagination?.pagesCount}
+              basePath={pagination?.basePath}
+            />
           </div>
         </div>
       </main>
@@ -78,7 +83,6 @@ const Tag = ({ allPosts: { posts, description, name } }: any) => {
 
 export async function getStaticPaths({ preview = false }) {
   const allPosts = await getAllTagsWithSlug(preview);
-  console.log(allPosts);
 
   return {
     paths: allPosts.nodes.map((post: any) => `/tag/${post.slug}`) || [],
@@ -88,10 +92,21 @@ export async function getStaticPaths({ preview = false }) {
 
 export async function getStaticProps({ preview = false, params }: any) {
   const id = params.slug;
-  console.log("MINIONS!", id);
-  const allPosts = await getPostsForTagPage(preview, id);
+  const { posts, pagination, tagDetails } = await getPostsForTagPage(
+    preview,
+    id
+  );
+
   return {
-    props: { allPosts, preview },
+    props: {
+      posts,
+      tagDetails,
+      preview,
+      pagination: {
+        ...pagination,
+        basePath: "/",
+      },
+    },
     revalidate: 10,
   };
 }

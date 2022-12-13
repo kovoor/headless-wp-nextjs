@@ -6,7 +6,7 @@ import { Feed } from "../../components/Feed";
 import { Footer } from "../../components/Footer";
 import { Header } from "../../components/Header";
 import { Sidebar } from "../../components/Sidebar";
-import { getAllPosts, getPagesCount, getPaginatedPosts, getSidebarPosts } from "../../lib/postQueryFunctions";
+import { getPaginatedPosts, getAllPosts, getPagesCount, getHomepageSidebarPosts } from "../../lib/postQueryFunctions";
 
 const Posts: NextPage = ({ posts, sidebarPosts, preview, pagination }: any) => {
   // const posts = edges
@@ -42,7 +42,7 @@ export async function getStaticProps({ params = {} }: any = {}, preview=false
   console.log("params?.page", params)
 
   const category = "guides";
-  const { sidebarPosts } = await getSidebarPosts(preview, category);
+  const { sidebarPosts } = await getHomepageSidebarPosts(preview, category);
 
   if (!pagination.currentPage) {
     return {

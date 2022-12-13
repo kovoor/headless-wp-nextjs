@@ -4,7 +4,6 @@ import { Pagination } from "./Pagination";
 import { Post } from "./Post";
 
 export const Feed = ({ posts, pagination }: any) => {
-  
   return (
     <div className="flex flex-col lg:w-9/12 h-6/12 overflow-hidden flex-wrap">
       {/* Screen Title */}
@@ -24,18 +23,18 @@ export const Feed = ({ posts, pagination }: any) => {
               passHref
             >
               <a> */}
-                <Post
-                  id={post.databaseId}
-                  title={post.title}
-                  coverImage={post.featuredImage}
-                  date={post.date}
-                  author={post.author}
-                  slug={post.slug}
-                  excerpt={post.excerpt}
-                  tags={post.tags}
-                  categories={post.categories}
-                />
-              {/* </a>
+            <Post
+              id={post.databaseId}
+              title={post.title}
+              coverImage={post.featuredImage}
+              date={post.date}
+              author={post.author}
+              slug={post.slug}
+              excerpt={post.excerpt}
+              tags={post.tags}
+              categories={post.categories}
+            />
+            {/* </a>
             </Link> */}
           </div>
         ))}

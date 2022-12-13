@@ -14,19 +14,11 @@ export const Post = ({
   tags,
   categories,
 }: any) => {
-  
   const name = author
     ? author.firstName && author.lastName
       ? `${author.firstName} ${author.lastName}`
       : author.name
     : null;
-
-    
-
-  // console.log(tags.nodes)
-  // console.log(categories)
-  // console.log(coverImage)
-
   return (
     <div className="flex bg-white border rounded-md px-4 py-4 space-x-4 w-full shadow-sm cursor-pointer">
       {/* Post Featured Image */}

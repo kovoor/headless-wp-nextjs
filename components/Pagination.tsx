@@ -124,8 +124,6 @@ export const Pagination = ({
 
               {pages.map((page) => {
                 const active = page === currentPage;
-                console.log(page)
-                console.log(currentPage)
                 return active ? (
                   // <li key={page}>
                   //   <span aria-label={`Current Page, Page ${page}`} aria-current="true">

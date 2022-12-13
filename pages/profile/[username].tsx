@@ -21,12 +21,16 @@ export const UserProfile = ({ data, isAuthor }: any) => {
   //   type: "",
   //   content: "",
   // });
-  const [message, setMessage] = useState<{ type?: string; status?: boolean; content?: string }>({
-      type: "",
-      content: "",
-    });
+  const [message, setMessage] = useState<{
+    type?: string;
+    status?: boolean;
+    content?: string;
+  }>({
+    type: "",
+    content: "",
+  });
 
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     getUser().then((user) => {
@@ -38,72 +42,104 @@ export const UserProfile = ({ data, isAuthor }: any) => {
     // });
   }, [userExists]);
 
-  const handleUserChangeDetails = async (e: FormEvent<HTMLFormElement>) => {
+  const handleEmailChange = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (email) {
       await supabase.auth
         .updateUser({ email: email })
         .then((data) => {
+          console.log(data);
           setMessage({
             type: "note",
+            status: false,
             content: "Check your email for the confirmation link.",
           });
+          setClose(false);
+
         })
         .catch((error) => {
+          console.log(error);
           setMessage({
             type: "error",
+            status: false,
             content: `${error}`,
           });
+          setClose(false);
+
         });
-    } else if (password) {
+    }
+  };
+
+  const handlePasswordChange = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (password) {
       await supabase.auth
         .updateUser({
           password: password,
         })
         .then((data) => {
           // router.reload()
-          console.log(data)
-          setClose(false)
+          console.log(data);
           setMessage({
             type: "success",
             status: false,
             content: "Password changed successfully.",
           });
+          setClose(false);
+
         })
         .catch((error) => {
           setMessage({
             type: "error",
+            status: false,
             content: `${error}`,
           });
-        });
-      // console.log(user, error)
-    } else if (username) {
-      await supabase.auth
-        .updateUser({
-          data: {
-            username: username,
-          },
-        })
-        .then((data) => {
-          router.push(`/profile/${username}`)
-          setMessage({
-            type: "success",
-            content: "Username changed successfully.",
-          });
-        })
-        .catch((error) => {
-          setMessage({
-            type: "error",
-            content: `${error}`,
-          });
+          setClose(false);
+
         });
     }
   };
 
-  // console.log(userIsLoggedIn)
-
-  // console.log(data[0].email_confirmed_at);
+  const handleUsernameChange = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (username) {
+        await supabase.auth
+          .updateUser({
+            data: {
+              username: username,
+            },
+          })
+          .then((data) => {
+            // setClose(false)
+            if(data.error != null) {
+              console.log(data.error)
+              setMessage({
+                type: "error",
+                status: false,
+                content: `This username is unavailable.`,
+              });
+              setClose(false);
+            } else {
+              router.push(`/profile/${username}`)
+              setMessage({
+                type: "success",
+                status: false,
+                content: "Username changed successfully.",
+              });
+              setClose(false);
+            }
+          })
+          .catch((error) => {
+            console.log(error)
+            setMessage({
+              type: "error",
+              status: false,
+              content: `${error}`,
+            });
+            setClose(false);
+          });
+      }
+  };
 
   return (
     <div className="">
@@ -119,19 +155,23 @@ export const UserProfile = ({ data, isAuthor }: any) => {
         {/* Avatar pic */}
         {message.type === "error" && (
           <div className="flex justify-center">
-            <ErrorAlert message={message.content} />
+            <ErrorAlert message={message.content} status={close} setFunction={setClose}/>
           </div>
         )}
 
         {message.type === "note" && (
           <div className="flex justify-center">
-            <NoteAlert message={message.content} />
+            <NoteAlert message={message.content} status={close} setFunction={setClose}/>
           </div>
         )}
 
         {message.type === "success" && (
           <div className="flex justify-center">
-            <SuccessAlert message={message.content} status={close} setFunction={setClose} />
+            <SuccessAlert
+              message={message.content}
+              status={close}
+              setFunction={setClose}
+            />
           </div>
         )}
 
@@ -187,7 +227,7 @@ export const UserProfile = ({ data, isAuthor }: any) => {
         userExists != null ? (
           <div className="flex w-fit flex-col items-left border p-4 mt-8 rounded-md bg-slate-100">
             {/* Change Username */}
-            <form onSubmit={handleUserChangeDetails} method="POST">
+            <form onSubmit={handleUsernameChange} method="POST">
               <h3 className="text-lg font-Space-Grotesk font-semibold">
                 Change username
               </h3>
@@ -206,7 +246,7 @@ export const UserProfile = ({ data, isAuthor }: any) => {
                   <button
                     className="bg-blue-400 hover:bg-blue-700 shadow text-white font-bold my-2 py-2 px-2 rounded focus:outline-none focus:shadow-outline"
                     type="submit"
-                    onClick={() => handleUserChangeDetails}
+                    onClick={() => handleUsernameChange}
                   >
                     {" "}
                     Change
@@ -216,7 +256,7 @@ export const UserProfile = ({ data, isAuthor }: any) => {
             </form>
 
             {/* Change password form */}
-            <form onSubmit={handleUserChangeDetails} method="POST">
+            <form onSubmit={handlePasswordChange} method="POST">
               <h3 className="text-lg font-Space-Grotesk font-semibold mt-8">
                 Change password
               </h3>
@@ -234,7 +274,7 @@ export const UserProfile = ({ data, isAuthor }: any) => {
                   <button
                     className="bg-blue-400 hover:bg-blue-700 shadow text-white font-bold my-2 py-2 px-2 rounded focus:outline-none focus:shadow-outline"
                     type="submit"
-                    onClick={() => handleUserChangeDetails}
+                    onClick={() => handlePasswordChange}
                   >
                     {" "}
                     Change
@@ -244,7 +284,7 @@ export const UserProfile = ({ data, isAuthor }: any) => {
             </form>
 
             {/* Change email form */}
-            <form onSubmit={handleUserChangeDetails} method="POST">
+            <form onSubmit={handleEmailChange} method="POST">
               <h3 className="text-lg font-Space-Grotesk font-semibold mt-8">
                 Change email
               </h3>
@@ -263,7 +303,7 @@ export const UserProfile = ({ data, isAuthor }: any) => {
                   <button
                     className="bg-blue-400 hover:bg-blue-700 shadow text-white font-bold my-2 py-2 px-2 rounded focus:outline-none focus:shadow-outline"
                     type="submit"
-                    onClick={() => handleUserChangeDetails}
+                    onClick={() => handleEmailChange}
                   >
                     {" "}
                     Change

@@ -23,7 +23,7 @@ const Home: NextPage = ({ posts, sidebarPosts, preview, pagination }: any) => {
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
-      console.log(event, session);
+      // console.log(event, session);
       if (session?.provider_refresh_token && session?.provider_token) {
         setCreateUserStatus(true);
       }
@@ -95,13 +95,12 @@ const Home: NextPage = ({ posts, sidebarPosts, preview, pagination }: any) => {
 
 export async function getStaticProps({ preview = false }) {
   const { posts, pagination } = await getPaginatedPosts(preview);
-  // console.log(posts)
   const category = "guides";
   const { sidebarPosts } = await getHomepageSidebarPosts(preview, category);
 
-  supabase.auth.onAuthStateChange((event, session) => {
-    console.log(event, session);
-  });
+  // supabase.auth.onAuthStateChange((event, session) => {
+  //   console.log(event, session);
+  // });
 
   return {
     props: {

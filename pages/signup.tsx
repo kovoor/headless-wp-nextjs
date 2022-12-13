@@ -13,8 +13,8 @@ import { Footer } from "../components/Footer";
 import { Apple } from "../components/Form/Apple";
 import { Google } from "../components/Form/Google";
 import { Header } from "../components/Header";
-import { MUTATION_REGISTER_USER } from "../data/userQueries";
-import { getUser, handleWPSignUp } from "../lib/userQueryFunctions";
+import { MUTATION_REGISTER_USER } from "../data/userMutations";
+import { getUser } from "../lib/userSupabaseFunctions";
 import { supabase } from "../utils/supabase";
 
 const SignUp = () => {
@@ -41,39 +41,18 @@ const SignUp = () => {
       },
     });
 
-  // getUser().then((user) => {
-  //   console.log(user);
-  //   setUserExists(user);
-  // });
-
-  // useEffect(() => {
-  //   // console.log(props?.router?.query.reset);
-  //   // if (props?.router?.query.reset === "success") {
-  //   //   setMessage({ type: "success", content: "Password reset successfully" });
-  //   // }
-
-  //   if (userExists !== null) {
-  //     router.replace("/account");
-  //   }
-
-  // }, [userExists]);
-
   if (userExists) {
     return null;
   }
 
   useEffect(() => {
-    // if (userExists !== null) {
-    //   // router.push("/account");
-    // }
-
-    supabase.auth.onAuthStateChange((event, session) => {
-      console.log(event, session)
-    })
+    // supabase.auth.onAuthStateChange((event, session) => {
+    //   console.log(event, session)
+    // })
 
     getUser().then((user) => {
       // setUserExists(user)
-      console.log(user)
+      // console.log(user)
       if(user) {
         router.push('/')
       }
@@ -134,9 +113,6 @@ const SignUp = () => {
 
     setLoading(true);
     setMessage({});
-
-    console.log(email);
-
     const { data: createdUser, error } = await supabase.auth.signUp({
       email: email,
       password: password,
@@ -146,18 +122,15 @@ const SignUp = () => {
         },
       },
     })
-
-    console.log(email);
-
     if (error) {
       setMessage({ type: "error", content: error.message });
-      console.log(error);
-      console.log(mutationError)
+      // console.log(error);
+      // console.log(mutationError)
     } else {
       if (createdUser.user) {
         setNewUser(createdUser.user);
-        console.log(newUser);
-        console.log("acct created - success! ", createdUser);
+        // console.log(newUser);
+        // console.log("acct created - success! ", createdUser);
 
         await handleWPSignUp({
           variables: {
@@ -170,7 +143,7 @@ const SignUp = () => {
           },
         })
           .then(() => {
-            console.log("success", data);
+            // console.log("success", data);
             setMessage({
               type: "success",
               content: "Just one more step. Please check your email for the confirmation link.",
