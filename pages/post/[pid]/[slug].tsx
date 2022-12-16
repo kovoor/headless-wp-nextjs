@@ -20,11 +20,17 @@ import {
   getPostAndMorePosts,
 } from "../../../lib/postQueryFunctions";
 import { Form } from "../../../components/Newsletter/Form";
+import { truncateExcerpt } from "../../../utils/format";
+import CommentSection from "../../../components/Comments/CommentSection";
 
 export const Post = ({ post, posts, preview, user }: any) => {
   // const router = useRouter();
   const morePosts = posts?.edges;
   const [userExists, setUserExists] = useState<User | null>();
+  var maxLength = 350
+
+  // var trimmedString = post?.excerpt.substr(0, maxLength);
+  // trimmedString = trimmedString.substr(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" ")))
 
   useEffect(() => {
     getUser().then((user) => {
@@ -112,7 +118,8 @@ export const Post = ({ post, posts, preview, user }: any) => {
                 {/* Post Excerpt (Not SEO Meta Description) */}
                 <div
                   className="font-Space-Grotesk text-base text-slate-600 font-normal mt-2"
-                  dangerouslySetInnerHTML={{ __html: post?.excerpt }}
+                  // dangerouslySetInnerHTML={{ __html: post?.excerpt }}
+                  dangerouslySetInnerHTML={{ __html: post?.excerpt ? truncateExcerpt(post?.excerpt, 380, ".") : truncateExcerpt(post?.content, 380, ".") }}
                 />
                 {/* Author(s) + Date */}
                 <div className="flex flex-row justify-between mt-2">
@@ -165,6 +172,7 @@ export const Post = ({ post, posts, preview, user }: any) => {
             {/* TODO:can be removed later, not need a heading  */}
             <h2 className="font-Space-Grotesk text-2xl font-bold ">
               {/* Comments */}
+              <CommentSection />
             </h2>
           </div>
 

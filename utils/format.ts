@@ -1,3 +1,12 @@
+export function truncateExcerpt(str:any, n: any, useWordBoundary: any ){
+  if (str.length <= n) { return str; }
+  const subString = str.slice(0, n-1); // the original check
+  return (useWordBoundary 
+    ? subString.slice(0, subString.lastIndexOf(" ")) 
+    : subString) + "&hellip;";
+};
+
+
 export function updateUserAvatar(avatar: any) {
   // The URL by default that comes from Gravatar / WordPress is not a secure
   // URL. This ends up redirecting to https, but it gives mixed content warnings

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import { sanitizeExcerpt } from "../utils/format";
+import { sanitizeExcerpt, truncateExcerpt } from "../utils/format";
 import Date from "./Date";
 
 export const Post = ({
@@ -54,7 +54,7 @@ export const Post = ({
               <a>
                 <div
                   className="text-gray-500 text-xs sm:text-sm md:text-base lg:text-base xl:text-base line-clamp-2 sm:line-clamp-3 md:line-clamp-3 cursor-pointer"
-                  dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(excerpt) }}
+                  dangerouslySetInnerHTML={{ __html: truncateExcerpt(sanitizeExcerpt(excerpt), 200, ".")}}
                 />
               </a>
             </Link>
