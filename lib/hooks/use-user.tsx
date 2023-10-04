@@ -1,8 +1,8 @@
 import { Session, SupabaseClient, User } from '@supabase/supabase-js';
 import { createContext, useContext, useEffect, useState } from 'react';
 import useSWR from 'swr';
-import supabase from '../utils/initSupabase';
-import { definitions } from '@lib/types/supabase';
+import { definitions } from '../../types/supabase';
+import { supabase } from '../../utils/supabase';
 
 interface AuthSessionProps {
   user: User | null;
@@ -33,7 +33,7 @@ export const UserContextProvider = (props: Props): JSX.Element => {
     user?.id ? ['user_data', user.id] : null,
     async (_, userId) =>
       supabase
-        .from<definitions['profiles']>('profiles')
+        .from('profiles')
         .select('*')
         .eq('id', userId)
         .single()
@@ -48,24 +48,24 @@ export const UserContextProvider = (props: Props): JSX.Element => {
     console.log(error);
   }
 
-  useEffect(() => {
-    const session = supabaseClient.auth.session();
+  useEffect(async () => {
+    const {data, error} = await supabase.auth.getSession()
 
     if (session) {
       setSession(session);
       setUser(session?.user ?? null);
     }
 
-    const { data: authListener, error } = supabaseClient.auth.onAuthStateChange(
+    const { data: authListener } = supabaseClient.auth.onAuthStateChange(
       async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
       }
     );
 
-    if (error) {
-      throw error;
-    }
+    // if (error) {
+    //   throw error;
+    // }
 
     return () => {
       authListener!.unsubscribe();

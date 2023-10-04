@@ -1,6 +1,10 @@
-import { ApolloClient, createHttpLink, HttpLink, InMemoryCache } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
-import { removeLastTrailingSlash } from './format';
+import {
+  ApolloClient,
+  createHttpLink,
+  HttpLink,
+  InMemoryCache,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
 let client: any;
 
@@ -25,7 +29,7 @@ export function getApolloClient() {
  * createApolloClient
  */
 
- const httpLink = createHttpLink({
+const httpLink = createHttpLink({
   uri: "http://defiantswp.local/graphql",
 });
 
@@ -37,12 +41,11 @@ const authLink = setContext((_, { headers }) => {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : "",
-    }
-  }
+    },
+  };
 });
 
 export function _createApolloClient() {
-
   if (process.env.WORDPRESS_AUTH_REFRESH_TOKEN) {
     return new ApolloClient({
       uri: "http://defiantswp.local/graphql",
@@ -77,4 +80,3 @@ export function _createApolloClient() {
     });
   }
 }
-

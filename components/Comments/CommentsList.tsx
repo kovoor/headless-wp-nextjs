@@ -10,6 +10,7 @@ import { CommentType } from '../../utils/types';
 import CommentSkeleton from './CommentSkeleton';
 import { SCROLL_OFFSET_PX } from './constants/pagination';
 import SortCommentsSelect from './SortCommentsSelect';
+import Comment from './Comment'
 
 dayjs.extend(relativeTime, {
   rounding: Math.floor,
@@ -72,7 +73,7 @@ const CommentsList = ({ initialData = null, useInfiniteScroll = false }: Props):
 
   if (!isLoadingInitialData && !rootComment) {
     return (
-      <div className="text-center text-red-600 dark:text-red-400 px-3 sm:px-6">
+      <div className="text-center text-sm text-red-600 dark:text-red-400 px-3 sm:px-6">
         This post does not exist.
       </div>
     );
@@ -82,7 +83,7 @@ const CommentsList = ({ initialData = null, useInfiniteScroll = false }: Props):
     <div
       ref={wrapperRef}
       className={cn(
-        'flex-grow overflow-y-auto overflow-x-hidden overscroll-contain transition-shadow px-3 sm:px-6 pb-6',
+        'flex-grow font-Inter overflow-y-auto overflow-x-hidden overscroll-contain transition-shadow px-3 sm:px-6 pb-6',
         {
           'shadow-inner': isScrolled,
         }
@@ -103,7 +104,7 @@ const CommentsList = ({ initialData = null, useInfiniteScroll = false }: Props):
               </div>
             ))}
             {error && (
-              <div className="text-center text-gray-600 dark:text-gray-400 px-3 sm:px-6">
+              <div className="text-center text-gray-600 px-3 sm:px-6">
                 Couldn&apos;t load comments. Please refresh the page.
               </div>
             )}
@@ -112,7 +113,7 @@ const CommentsList = ({ initialData = null, useInfiniteScroll = false }: Props):
             {!isReachingEnd && (
               <button
                 onClick={() => loadMore()}
-                className="text-sm border-none hover:underline focus:underline focus-ring font-semibold text-gray-600 dark:text-gray-400"
+                className="text-sm border-none hover:underline focus:underline focus-ring font-semibold text-gray-600"
                 disabled={isLoadingMore}
                 aria-label={`Load ${remainingCount} more replies`}
               >
@@ -121,13 +122,13 @@ const CommentsList = ({ initialData = null, useInfiniteScroll = false }: Props):
             )}
 
             {!error && isReachingEnd && count !== 0 && (
-              <div className="my-6 text-gray-700 dark:text-gray-200">
+              <div className="my-6 text-base text-gray-700">
                 You&apos;ve reached the end.
               </div>
             )}
 
             {isEmpty && (
-              <div className="my-6 text-gray-700 dark:text-gray-200">
+              <div className="my-6 text-base text-gray-700">
                 There are no comments. Be the first.
               </div>
             )}

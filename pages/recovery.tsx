@@ -1,16 +1,16 @@
-import { ChevronLeftIcon, HomeIcon } from "@heroicons/react/outline";
-import { CheckCircleIcon } from "@heroicons/react/solid";
-import { Session, User } from "@supabase/supabase-js";
-import Head from "next/head";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import React, { FormEventHandler, useEffect, useState } from "react";
-import { ErrorAlert } from "../components/Alert/ErrorAlert";
-import { NoteAlert } from "../components/Alert/NoteAlert";
-import { SuccessAlert } from "../components/Alert/SuccessAlert";
-import { Header } from "../components/Header";
-import { getUser } from "../lib/userQueryFunctions";
-import { supabase } from "../utils/supabase";
+import { HomeIcon } from '@heroicons/react/outline';
+import { User } from '@supabase/supabase-js';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { FormEventHandler, useEffect, useState } from 'react';
+
+import { ErrorAlert } from '../components/Alert/ErrorAlert';
+import { NoteAlert } from '../components/Alert/NoteAlert';
+import { SuccessAlert } from '../components/Alert/SuccessAlert';
+import { Header } from '../components/Header';
+import { getUser } from '../lib/userQueryFunctions';
+import { supabase } from '../utils/supabase';
 
 const Recovery = () => {
   const [state, setState] = useState<"default" | "resetting">("default");
@@ -176,6 +176,8 @@ const Recovery = () => {
               </div>
             </form>
           </div>
+
+          
 
           <div className="group flex w-96 self-center mt-4 justify-center border py-4 rounded-lg bg-white border-slate-400 cursor-pointer ">
             <span className="">

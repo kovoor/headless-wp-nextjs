@@ -161,20 +161,23 @@ export const Post = ({ post, posts, preview, user }: any) => {
               <div className="mt-6 text-slate-600 tracking-wide	md:text-lg">
                 <PostBody content={post?.content} />
               </div>
+
+              {/* TODO: Add comments section */}
+          <div className="flex flex-1 px-6 py-2">
+            {/* TODO:can be removed later, not need a heading  */}
+              {/* Comments */}
+              <div className="flex flex-1 justify-center align-middle text flex-col w-full " >
+              <CommentSection />
+              </div>
+          
+          </div>
             </div>
           </main>
 
           {/* TODO: Add appearing button conditionally */}
           {/* {userExists ? <></> : <Form />} */}
 
-          {/* TODO: Add comments section */}
-          <div className="flex flex-1 px-6 py-2">
-            {/* TODO:can be removed later, not need a heading  */}
-            <h2 className="font-Space-Grotesk text-2xl font-bold ">
-              {/* Comments */}
-              <CommentSection />
-            </h2>
-          </div>
+          
 
           {posts ? (
             <div className="flex flex-1 flex-col px-6 py-2 bg-slate-50 w-full mb-6 max-h-fit  ">

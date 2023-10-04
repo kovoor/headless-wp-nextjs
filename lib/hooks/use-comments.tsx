@@ -1,11 +1,14 @@
-import { PAGE_SIZE } from '@lib/constants/pagination';
-import { useUser } from '@lib/hooks/use-user';
-import { definitions } from '@lib/types/supabase';
-import supabase from '@lib/utils/initSupabase';
-import type { CommentType, User } from '@lib/utils/types';
+
+import { User } from '@supabase/supabase-js';
 import { arrayToTree } from 'performant-array-to-tree';
 import { createContext, useContext, useState } from 'react';
-import useSWR, { useSWRInfinite } from 'swr';
+import useSWR from 'swr';
+import useSWRInfinite from "swr/infinite"
+import { PAGE_SIZE } from '../../components/Comments/constants/pagination';
+import { definitions } from '../../types/supabase';
+import { supabase } from '../../utils/supabase';
+import { CommentType } from '../../utils/types';
+import { useUser } from './use-user';
 
 export type SortingBehavior = 'pathVotesRecent' | 'pathLeastRecent' | 'pathMostRecent';
 
@@ -73,11 +76,8 @@ export const CommentsContextProvider = (props: CommentsContextProviderProps): JS
   const { user } = useUser();
   const [sortingBehavior, setSortingBehavior] = useState<SortingBehavior>('pathVotesRecent');
 
-  const { data: count, mutate: mutateGlobalCount, error: commentsError } = useSWR<
-    number | null,
-    any
-  >(`globalCount_${postId}`, {
-    initialData: null,
+  const { data: count, mutate: mutateGlobalCount, error: commentsError } = useSWR(`globalCount_${postId}`, {
+    fallbackData: null,
     fetcher: () => null,
     revalidateOnFocus: false,
     revalidateOnMount: false,
@@ -85,9 +85,9 @@ export const CommentsContextProvider = (props: CommentsContextProviderProps): JS
 
   const { data: rootComment, mutate: mutateRootComment } = useSWR(
     ['posts', postId, user],
-    async (_, postId, _user) =>
+    async (_: any, postId: any, _user: any) =>
       supabase
-        .from<definitions['comments_thread_with_user_vote']>('comments_thread_with_user_vote')
+        .from('comments_thread_with_user_vote')
         .select('*')
         .eq('id', postId)
         .then(({ data, error }) => {
@@ -124,12 +124,12 @@ export const CommentsContextProvider = (props: CommentsContextProviderProps): JS
   };
 
   const { data, error, size, setSize, mutate: mutateComments } = useSWRInfinite(
-    (pageIndex, previousPageData) =>
+    (pageIndex: any, previousPageData: any) =>
       getKey(pageIndex, previousPageData, postId, sortingBehavior, user), // Include user to revalidate when auth changes
-    async (_name, path, sortingBehavior, _user) => {
+    async (_name: any, path: any, sortingBehavior: any, _user: any) => {
       return (
         supabase
-          .from<definitions['comments_thread_with_user_vote']>('comments_thread_with_user_vote')
+          .from('comments_thread_with_user_vote')
           .select('*', { count: 'exact' })
           .contains('path', [postId])
           // .lt('depth', MAX_DEPTH)
@@ -139,7 +139,7 @@ export const CommentsContextProvider = (props: CommentsContextProviderProps): JS
           .then(({ data, error, count: tableCount }) => {
             if (error) throw error;
             if (!data) return null;
-            mutateGlobalCount((count) => {
+            mutateGlobalCount((count: any) => {
               if (count) return count;
               return tableCount;
             }, false);
@@ -179,7 +179,7 @@ export const CommentsContextProvider = (props: CommentsContextProviderProps): JS
     isLoadingInitialData || !!(size > 0 && data && typeof data[size - 1] === 'undefined');
   const isEmpty = !data || data?.[0]?.length === 0;
   const remainingCount = !count || isEmpty ? 0 : count - flattenedComments.length;
-  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < PAGE_SIZE);
+  const isReachingEnd = isEmpty || (data && data[data.length - 1]!.length < PAGE_SIZE);
 
   function loadMore(): void {
     if (isLoadingMore || isReachingEnd) return;
